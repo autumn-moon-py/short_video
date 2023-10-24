@@ -1,0 +1,1 @@
+flutter build apk --no-tree-shake-icons -vv --obfuscate --split-debug-info=debuginfo
