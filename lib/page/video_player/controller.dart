@@ -15,18 +15,18 @@ class Player {
     videoList = GetVideo.get('A', 94);
     int i = 0;
     for (var video in videoList) {
-      await video.init(which);
+      await video.init(which, videoPageviewController);
       i++;
       if (i == load) break;
     }
     videoPageviewController.addListener(() async {
       nowPage = videoPageviewController.page!.toInt();
       final video = videoList[nowPage];
-      await video.init(which);
+      await video.init(which, videoPageviewController);
       if (nowPage >= load - 1) {
         for (var i = nowPage; i < nowPage + load; i++) {
           final nVideo = videoList[i];
-          await nVideo.init(which);
+          await nVideo.init(which, videoPageviewController);
         }
       }
       if (nowPage > overDispose - 1) {

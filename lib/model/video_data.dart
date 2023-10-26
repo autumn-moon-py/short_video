@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -52,7 +53,7 @@ class VideoData {
     await player.dispose();
   }
 
-  Future<void> init(String which) async {
+  Future<void> init(String which, PageController pageController) async {
     if (isInitialized.value || startInit) return;
     startInit = true;
     // DateTime start = DateTime.now();
@@ -68,6 +69,13 @@ class VideoData {
     player = Player();
     controller = VideoController(player);
     await player.open(Media(url), play: false);
+    player.stream.completed.listen((value) {
+      if (value) {
+        pause();
+        pageController.nextPage(
+            duration: const Duration(milliseconds: 0), curve: Curves.bounceIn);
+      }
+    });
     // video_player
     // controller = VideoPlayerController.networkUrl(Uri.parse(vercelUrl));
     // await controller.initialize();

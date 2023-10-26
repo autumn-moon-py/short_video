@@ -11,7 +11,6 @@ import '../../utils.dart';
 class VideoController extends GetxController {
   VideoController();
   var isHeadset = false.obs;
-  var volume = 0.0.obs;
   var volumeC = VolumeController();
   final videoPageviewController = PageController();
   final player = Player();
@@ -19,7 +18,6 @@ class VideoController extends GetxController {
   List<VideoData> get videoList => player.videoList;
 
   _initData() async {
-    getVolume();
     getHeadset();
     await ScreenProtector.protectDataLeakageOn();
     final pingResult = await ping();
@@ -47,26 +45,17 @@ class VideoController extends GetxController {
     }
   }
 
-  Future<void> getVolume() async {
-    volume.value = await volumeC.getVolume();
-    logger.i('当前音量：${volume.value}');
-    volumeC.listener((v) {
-      volume.value = v;
-      logger.i('当前音量：${volume.value}');
-    });
-  }
-
   void getHeadset() {
     HeadsetEvent headsetPlugin = HeadsetEvent();
     headsetPlugin.setListener((val) {
       isHeadset.value = val == HeadsetState.CONNECT;
-      logger.i('耳机状态：${isHeadset.value ? '已插入' : '已拔出'}');
+      logger.i('autumn 耳机状态：${isHeadset.value ? '已插入' : '已拔出'}');
       if (!isHeadset.value) {
-        volumeC.muteVolume(showSystemUI: false);
-        logger.i('静音');
+        volumeC.setVolume(0, showSystemUI: false);
+        logger.i('autumn 静音');
       } else {
-        volumeC.setVolume(volume.value, showSystemUI: false);
-        logger.i('恢复音量');
+        volumeC.maxVolume(showSystemUI: false);
+        logger.i('autumn 恢复音量');
       }
     });
   }
