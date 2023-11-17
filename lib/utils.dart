@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 
 var logger = Logger();
 const cf = 'video-cf.subrecovery.top';
-const vercel = 'video.subrecovery.top';
+const vercel = 'proxy.subrecovery.top';
 const loacl = '172.18.30.49';
 
 void toast(String info) {
