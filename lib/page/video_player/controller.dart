@@ -5,39 +5,32 @@ import '../../data.dart';
 
 class Player {
   List<VideoData> videoList = [];
+  List<VideoData> overInit = [];
+  List<VideoData> waitDispose = [];
   int nowPage = 0;
-  int overDispose = 2;
-  int load = 2;
-  bool canNext = true;
+  int load = 4;
 
-  Future<void> init(
-      String which, PageController videoPageviewController) async {
-    videoList = GetVideo.get('A', 94);
+  Future<void> init(PageController videoPageviewController) async {
+    videoList.addAll(GetVideo.get('A', 94));
+    videoList.addAll(GetVideo.get('B', 35));
     int i = 0;
+    //初始预加载load个
     for (var video in videoList) {
-      await video.init(which, videoPageviewController);
+      bool success = await video.init(videoPageviewController);
+      if (success) overInit.add(video);
       i++;
       if (i == load) break;
     }
     videoPageviewController.addListener(() async {
       nowPage = videoPageviewController.page!.toInt();
+      if (overInit.length > 4) {
+        waitDispose.add(overInit[0]);
+        overInit.removeAt(0);
+      }
+      //如果当前视频没有预加载/已释放再调用加载
       final video = videoList[nowPage];
-      await video.init(which, videoPageviewController);
-      if (nowPage >= load - 1) {
-        for (var i = nowPage; i < nowPage + load; i++) {
-          final nVideo = videoList[i];
-          await nVideo.init(which, videoPageviewController);
-        }
-      }
-      if (nowPage > overDispose - 1) {
-        final disVideo = videoList[nowPage - overDispose];
-        await disVideo.dispose();
-      }
-      // if (!canNext) return;
-      // canNext = false;
-      // await Future.delayed(const Duration(seconds: 10));
-      // videoPageviewController.jumpToPage(nowPage + 1);
-      // canNext = true;
+      bool success = await video.init(videoPageviewController);
+      if (success) overInit.add(video);
     });
   }
 }

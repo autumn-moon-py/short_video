@@ -18,10 +18,9 @@ class VideoController extends GetxController {
   List<VideoData> get videoList => player.videoList;
 
   _initData() async {
-    getHeadset();
+    // getHeadset();
     await ScreenProtector.protectDataLeakageOn();
-    final pingResult = await ping();
-    player.init(pingResult, videoPageviewController);
+    player.init(videoPageviewController);
     update(["video"]);
   }
 
@@ -29,20 +28,6 @@ class VideoController extends GetxController {
   void onReady() {
     super.onReady();
     _initData();
-  }
-
-  Future<String> ping() async {
-    final loaclPing = await pingWeb(loacl, 'local');
-    final vercelPing = await pingWeb(vercel, 'vercel');
-    final cfPing = await pingWeb(cf, 'cf');
-    if (loaclPing > 0) {
-      return 'local';
-    }
-    if (vercelPing < cfPing) {
-      return 'vercel';
-    } else {
-      return 'cf';
-    }
   }
 
   void getHeadset() {

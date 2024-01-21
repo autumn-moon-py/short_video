@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:short_video/utils.dart';
-// import 'package:video_player/video_player.dart';
 
 class VideoData {
   String title = '';
-  String cfUrl = '';
-  String vercelUrl = '';
   String localUrl = '';
-  // late VideoPlayerController controller;
   late Player player;
   late VideoController controller;
   var isInitialized = false.obs;
@@ -19,19 +16,16 @@ class VideoData {
   var isDispose = false.obs;
   bool showTitle = true;
   bool startInit = false;
-  VideoData(
-      {required this.title, required this.cfUrl, required this.vercelUrl});
+  VideoData({required this.title, required this.localUrl});
 
   void play() {
     if (!isInitialized.value || isPlaying.value) return;
-    // controller.play();
     player.play();
     isPlaying.value = true;
   }
 
   void pause() {
     if (!isInitialized.value || isDispose.value || !isPlaying.value) return;
-    // controller.pause();
     player.pause();
     player.seek(Duration.zero);
     isPlaying.value = false;
@@ -39,13 +33,11 @@ class VideoData {
 
   void playOrPause() {
     if (!isInitialized.value || isDispose.value) return;
-    // isPlaying.value ? controller.pause() : controller.play();
     player.playOrPause();
     isPlaying.value = !isPlaying.value;
   }
 
   Future<void> dispose() async {
-    // controller.dispose();
     if (isDispose.value) return;
     isInitialized.value = false;
     isPlaying.value = false;
@@ -53,38 +45,36 @@ class VideoData {
     await player.dispose();
   }
 
-  Future<void> init(String which, PageController pageController) async {
-    if (isInitialized.value || startInit) return;
+  Future<bool> init(PageController pageController) async {
+    if (isInitialized.value || startInit) return false;
     startInit = true;
-    // DateTime start = DateTime.now();
-    // mdeia_kit
-    String url = '';
-    if (which == 'local') {
-      url = localUrl;
-    } else if (which == 'vercel') {
-      url = vercelUrl;
-    } else {
-      url = cfUrl;
-    }
+    String url = localUrl;
     player = Player();
     controller = VideoController(player);
     await player.open(Media(url), play: false);
-    player.stream.completed.listen((value) {
-      if (value) {
-        pause();
-        pageController.nextPage(
-            duration: const Duration(milliseconds: 0), curve: Curves.bounceIn);
-      }
+    player.stream.error.listen((error) {
+      pause();
+      logger.i("autumn $title error $error");
+      EasyLoading.showError('加载失败\n$error');
     });
-    // video_player
-    // controller = VideoPlayerController.networkUrl(Uri.parse(vercelUrl));
-    // await controller.initialize();
+    // player.seek(Duration(seconds: player.state.duration.inSeconds - 3));
+    try {
+      player.stream.completed.listen((value) {
+        logger.i('autumn $title isCompleted $value');
+        if (value) {
+          pause();
+          pageController.nextPage(
+              duration: const Duration(milliseconds: 10),
+              curve: Curves.bounceIn);
+        }
+      });
+    } catch (e) {
+      EasyLoading.showError("$e", duration: const Duration(seconds: 10));
+    }
     isInitialized.value = true;
     if (isShow.value) play();
     startInit = false;
-    // DateTime end = DateTime.now();
-    // Duration duration = end.difference(start);
-    // logger.i('autumn $title time: ${duration.inSeconds}s');
+    return true;
   }
 
   void listen() {

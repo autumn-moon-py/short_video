@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:short_video/model/video_data.dart';
-// import 'package:video_player/video_player.dart';
 
 import '../../widget.dart';
 
@@ -62,7 +61,6 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
       if (quadrant == 1 || quadrant == 4) {
         widget.data.showTitle = false;
-
         SystemChrome.setPreferredOrientations(
             [DeviceOrientation.landscapeRight]);
       } else {
@@ -115,8 +113,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                     wakelock: false,
                     pauseUponEnteringBackgroundMode: false,
                     resumeUponEnteringForegroundMode: false,
-                    controls: (state) => sb()),
-              ));
+                    controls: (state) => sb())));
   }
 
   @override
