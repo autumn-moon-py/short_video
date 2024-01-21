@@ -3,12 +3,59 @@ import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:short_video/model/video_data.dart';
+import 'package:short_video/video_data.dart';
 
-import '../../widget.dart';
+import '../utils.dart';
+
+class Player {
+  List<VideoInfo> videoList = [];
+  List<VideoInfo> overInit = [];
+  int nowPage = 0;
+  int load = 4; //实际是load+1个视频
+
+  Future<void> init(PageController videoPageviewController) async {
+    videoList.addAll(videoGet(videosList));
+    videoList.shuffle();
+    int i = 0;
+    //初始预加载
+    for (var video in videoList) {
+      bool success = await video.init(videoPageviewController);
+      if (success) overInit.add(video);
+      i++;
+      if (i == load) break;
+    }
+    videoPageviewController.addListener(() {
+      loadVideos(videoPageviewController);
+    });
+  }
+
+  void loadVideos(PageController videoPageviewController) {
+    // 当前页数
+    nowPage = videoPageviewController.page!.toInt();
+    // 判断下一个页面的内容是否存在
+    var coming = nowPage + 1 < videoList.length ? videoList[nowPage + 1] : null;
+    // 判断这个视频是否已经被预加载过，如果没被加载过，就加载
+    if (coming != null && !overInit.contains(coming)) {
+      coming.init(videoPageviewController).then((success) {
+        if (success && !overInit.contains(coming)) {
+          overInit.add(coming);
+        }
+      });
+    }
+    // 如果已经初始化的视频过多，释放先初始化的视频
+    if (overInit.length > load) {
+      var toRemove = overInit.first;
+      toRemove.dispose();
+      overInit.remove(toRemove);
+    }
+  }
+}
+
+Widget sb({double? width, double? height, Widget? child}) =>
+    SizedBox(width: width, height: height, child: child);
 
 class MyVideoPlayer extends StatefulWidget {
-  final VideoData data;
+  final VideoInfo data;
   const MyVideoPlayer({super.key, required this.data});
 
   @override
@@ -30,6 +77,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     widget.data.isShow.value = false;
   }
 
+  ///触摸区域检测
   void onPanDown(DragDownDetails details) {
     double dx = 0;
     double dy = 0;
@@ -57,6 +105,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     }
   }
 
+  ///屏幕旋转
   void onLongPress() {
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
       if (quadrant == 1 || quadrant == 4) {
@@ -75,8 +124,9 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     setState(() {});
   }
 
+  ///播放按钮
   Widget _tabBox() {
-    return !widget.data.isInitialized.value
+    return !widget.data.isInitialized.value && !widget.data.isShow.value
         ? sb()
         : Stack(children: [
             widget.data.isPlaying.value
@@ -92,8 +142,9 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
           ]);
   }
 
+  ///视频标题
   Widget _title() {
-    return !widget.data.isInitialized.value || !widget.data.showTitle
+    return !widget.data.showTitle
         ? sb()
         : Container(
             alignment: Alignment.topCenter,
@@ -102,6 +153,7 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                 style: const TextStyle(color: Colors.white, fontSize: 25)));
   }
 
+  ///视频组件
   Widget _video() {
     return Center(
         child: !widget.data.isInitialized.value

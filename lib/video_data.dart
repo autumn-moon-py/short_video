@@ -5,7 +5,7 @@ import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:short_video/utils.dart';
 
-class VideoData {
+class VideoInfo {
   String title = '';
   String localUrl = '';
   late Player player;
@@ -16,7 +16,7 @@ class VideoData {
   var isDispose = false.obs;
   bool showTitle = true;
   bool startInit = false;
-  VideoData({required this.title, required this.localUrl});
+  VideoInfo({required this.title, required this.localUrl});
 
   void play() {
     if (!isInitialized.value || isPlaying.value) return;
