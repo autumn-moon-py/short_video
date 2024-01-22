@@ -16,7 +16,6 @@ class _VideoListPageState extends State<VideoListPage> {
   final videoPageviewController = PageController();
   final player = Player();
   List<VideoInfo> get videoList => player.videoList;
-  bool loading = true;
 
   @override
   void initState() {
@@ -27,9 +26,7 @@ class _VideoListPageState extends State<VideoListPage> {
   Future<void> ready() async {
     getHeadset();
     await player.init(videoPageviewController);
-    loading = false;
     await ScreenProtector.protectDataLeakageOn();
-    setState(() {});
   }
 
   @override
@@ -44,11 +41,6 @@ class _VideoListPageState extends State<VideoListPage> {
           itemBuilder: (_, index) {
             return MyVideoPlayer(data: videoList[index]);
           }),
-      if (loading)
-        const Center(
-            child: SizedBox(
-                width: 50,
-                child: CircularProgressIndicator(color: Colors.white)))
     ]);
   }
 }

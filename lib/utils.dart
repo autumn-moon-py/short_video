@@ -8,7 +8,7 @@ var logger = Logger();
 const loacl = '192.168.16.103';
 const videosList = [
   ['A', 94],
-  ['B', 35]
+  ['B', 34]
 ];
 
 ///视频列表处理

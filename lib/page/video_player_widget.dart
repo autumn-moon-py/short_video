@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:short_video/video_data.dart';
@@ -63,8 +62,6 @@ class MyVideoPlayer extends StatefulWidget {
 }
 
 class _MyVideoPlayerState extends State<MyVideoPlayer> {
-  int quadrant = 0;
-
   @override
   void initState() {
     super.initState();
@@ -77,56 +74,20 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
     widget.data.isShow.value = false;
   }
 
-  ///触摸区域检测
-  void onPanDown(DragDownDetails details) {
-    double dx = 0;
-    double dy = 0;
-    List<double> origin = [0.5.sw, 0.5.sh];
-    List<double> onTap = [0, 0];
-    dx = details.globalPosition.dx;
-    dy = details.globalPosition.dy;
-    onTap[0] = dx - origin[0];
-    onTap[1] = dy - origin[1];
-    if (onTap[0] > 0) {
-      if (onTap[1] > 0) {
-        quadrant = 4;
-      }
-      if (onTap[1] < 0) {
-        quadrant = 1;
-      }
-    }
-    if (onTap[0] < 0) {
-      if (onTap[1] > 0) {
-        quadrant = 3;
-      }
-      if (onTap[1] < 0) {
-        quadrant = 2;
-      }
-    }
-  }
-
-  ///屏幕旋转
+  ///长按旋转屏幕
   void onLongPress() {
-    if (MediaQuery.of(context).orientation == Orientation.portrait) {
-      if (quadrant == 1 || quadrant == 4) {
-        widget.data.showTitle = false;
-        SystemChrome.setPreferredOrientations(
-            [DeviceOrientation.landscapeRight]);
-      } else {
-        widget.data.showTitle = false;
-        SystemChrome.setPreferredOrientations(
-            [DeviceOrientation.landscapeLeft]);
-      }
+    var isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
+    if (isPortrait) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft]);
     } else {
-      widget.data.showTitle = true;
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     }
-    setState(() {});
+    widget.data.showTitle.value = !widget.data.showTitle.value;
   }
 
   ///播放按钮
   Widget _tabBox() {
-    return !widget.data.isInitialized.value && !widget.data.isShow.value
+    return !widget.data.isInitialized.value
         ? sb()
         : Stack(children: [
             widget.data.isPlaying.value
@@ -136,15 +97,14 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
                         color: Colors.white, size: 100)),
             GestureDetector(
                 onDoubleTap: () => widget.data.playOrPause(),
-                onPanDown: onPanDown,
-                onLongPress: onLongPress,
+                onLongPress: () => onLongPress(),
                 child: Container(color: Colors.transparent))
           ]);
   }
 
   ///视频标题
   Widget _title() {
-    return !widget.data.showTitle
+    return !widget.data.showTitle.value
         ? sb()
         : Container(
             alignment: Alignment.topCenter,
@@ -155,26 +115,31 @@ class _MyVideoPlayerState extends State<MyVideoPlayer> {
 
   ///视频组件
   Widget _video() {
-    return Center(
-        child: !widget.data.isInitialized.value
-            ? const CircularProgressIndicator()
-            : SizedBox(
-                width: 1.sw,
-                child: Video(
-                    controller: widget.data.controller,
-                    wakelock: false,
-                    pauseUponEnteringBackgroundMode: false,
-                    resumeUponEnteringForegroundMode: false,
-                    controls: (state) => sb())));
+    return Video(
+        controller: widget.data.controller,
+        fill: Colors.transparent,
+        pauseUponEnteringBackgroundMode: false,
+        resumeUponEnteringForegroundMode: false,
+        controls: (state) => sb());
+  }
+
+  ///加载组件
+  Widget _loading() {
+    return const Center(
+        child: SizedBox(
+            width: 50,
+            height: 50,
+            child: CircularProgressIndicator(color: Colors.white)));
   }
 
   @override
   Widget build(BuildContext context) {
     return Obx(() => Stack(children: [
           Container(color: Colors.black),
+          _loading(),
           _video(),
           _tabBox(),
-          _title()
+          _title(),
         ]));
   }
 }

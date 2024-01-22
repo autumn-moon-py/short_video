@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
+// ignore: depend_on_referenced_packages
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 import 'package:short_video/utils.dart';
@@ -14,8 +15,9 @@ class VideoInfo {
   var isPlaying = false.obs;
   var isShow = false.obs;
   var isDispose = false.obs;
-  bool showTitle = true;
+  var showTitle = true.obs;
   bool startInit = false;
+
   VideoInfo({required this.title, required this.localUrl});
 
   void play() {
@@ -52,10 +54,19 @@ class VideoInfo {
     player = Player();
     controller = VideoController(player);
     await player.open(Media(url), play: false);
+    playerListen(pageController);
+    isInitialized.value = true;
+    if (isShow.value) play();
+    startInit = false;
+    return true;
+  }
+
+  void playerListen(PageController pageController) {
     player.stream.error.listen((error) {
       pause();
       logger.i("autumn $title error $error");
-      EasyLoading.showError('加载失败\n$error');
+      EasyLoading.showError('加载失败\n$error',
+          duration: const Duration(seconds: 5));
     });
     // player.seek(Duration(seconds: player.state.duration.inSeconds - 3));
     try {
@@ -68,13 +79,7 @@ class VideoInfo {
               curve: Curves.bounceIn);
         }
       });
-    } catch (e) {
-      EasyLoading.showError("$e", duration: const Duration(seconds: 10));
-    }
-    isInitialized.value = true;
-    if (isShow.value) play();
-    startInit = false;
-    return true;
+    } catch (_) {}
   }
 
   void listen() {
