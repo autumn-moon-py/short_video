@@ -5,7 +5,7 @@ import 'package:volume_controller/volume_controller.dart';
 import 'video_data.dart';
 
 var logger = Logger();
-const loacl = '192.168.16.103';
+const loacl = '10.12.48.35';
 const videosList = [
   ['A', 93],
   ['B', 34]
