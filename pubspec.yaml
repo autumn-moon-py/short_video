@@ -1,0 +1,28 @@
+name: short_video
+description: "A new Flutter project."
+publish_to: "none"
+version: 1.0.4
+environment:
+  sdk: ">=3.6.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # 状态管理
+  get: ^4.6.6
+  # 后台屏幕保护
+  screen_protector: ^1.4.2+1
+  # 视频播放
+  media_kit: ^1.1.11
+  media_kit_video: ^1.2.5
+  media_kit_libs_video: ^1.0.5
+  # 本地存储
+  shared_preferences: ^2.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

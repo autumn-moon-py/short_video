@@ -1,0 +1,1 @@
+cmd /k "flutter build apk --no-tree-shake-icons"

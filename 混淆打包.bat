@@ -1,0 +1,1 @@
+cmd /k "flutter build apk --obfuscate --split-debug-info=info"
