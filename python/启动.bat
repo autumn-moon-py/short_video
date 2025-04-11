@@ -1,2 +1,1 @@
-python main.py
-pause
+cmd /k "venv\Scripts\activate&&python main.py"

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -9,10 +11,11 @@ import 'pages/logic.dart';
 import 'pages/page.dart';
 import 'video/player_tool.dart';
 
-const normalUrl = "192.168.0.122";
+const normalUrl = "192.168.1.5";
 const normalPort = "9090";
 
 Future<void> main() async {
+  HttpOverrides.global = DevHttpOverrides();
   WidgetsFlutterBinding.ensureInitialized();
   MediaKit.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
@@ -25,4 +28,14 @@ Future<void> main() async {
       title: '短视频',
       debugShowCheckedModeBanner: false,
       home: Scaffold(body: VideoListPage())));
+}
+
+class DevHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    // 信任所有证书
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
 }

@@ -1,7 +1,7 @@
 name: short_video
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.0.4
+version: 1.0.5
 environment:
   sdk: ">=3.6.0 <4.0.0"
 
@@ -18,6 +18,8 @@ dependencies:
   media_kit_libs_video: ^1.0.5
   # 本地存储
   shared_preferences: ^2.3.3
+  # 缓存管理
+  flutter_cache_manager: ^3.4.1
 
 dev_dependencies:
   flutter_test:

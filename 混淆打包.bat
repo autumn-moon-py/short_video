@@ -1,1 +1,1 @@
-cmd /k "flutter build apk --obfuscate --split-debug-info=info"
+cmd /k "flutter build apk --obfuscate --split-debug-info=info --no-tree-shake-icons"

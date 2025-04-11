@@ -8,7 +8,7 @@ from fastapi import FastAPI
 app = FastAPI(name="file_server")
 VIDEO_EXTENSIONS = [".webm",".mp4"]
 video_dir = "E:/video/完成"
-host = "192.168.1.3"
+host = "192.168.1.5"
 
 
 @app.get("/")

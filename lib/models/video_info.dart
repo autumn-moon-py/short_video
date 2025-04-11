@@ -1,3 +1,4 @@
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -9,6 +10,7 @@ import '../utils/tools.dart';
 class VideoInfo {
   String title = '';
   String videoUrl = '';
+  String videoPath = "";
 
   late Player player;
   late VideoController controller;
@@ -20,6 +22,7 @@ class VideoInfo {
   var showTitle = true.obs;
   var showLoading = true.obs;
   var showPauseIcon = false.obs;
+  bool liked = false;
 
   bool startInit = false;
 
@@ -32,11 +35,16 @@ class VideoInfo {
   Future<bool> init() async {
     if (isInited.value || startInit) return false;
     startInit = true;
-    String url = videoUrl;
     player = Player();
     controller = VideoController(player);
     listen();
-    await player.open(Media(url), play: false);
+    final info = await DefaultCacheManager().getFileFromCache(title);
+    if (info != null) {
+      Log.d("已缓存$title,直接读取");
+      videoPath = info.file.path;
+    }
+    await player.open(Media(videoPath.isEmpty ? videoUrl : videoPath),
+        play: false);
     startInit = false;
     return true;
   }
@@ -47,6 +55,12 @@ class VideoInfo {
     isPlaying.value = false;
     isDispose.value = true;
     await player.dispose();
+    if (!liked) return;
+    final info = await DefaultCacheManager().getFileFromCache(title);
+    if (info == null) {
+      Log.d("未缓存$title,加入缓存");
+      await DefaultCacheManager().downloadFile(videoUrl, key: title);
+    }
   }
 
   Future<void> play() async {
@@ -70,6 +84,10 @@ class VideoInfo {
         isInited.value = true;
         showLoading.value = false;
       }
+      if (value > Duration(seconds: 30) && !liked) {
+        liked = true;
+        Log.d("标记$title为喜欢,加入缓存队列");
+      }
     });
     player.stream.playing.listen((value) {
       isPlaying.value = value;
@@ -79,11 +97,12 @@ class VideoInfo {
       if (value) {
         Log.d('$title 播放完成');
         pause();
+
         Get.put(VideoListLogic()).nextPage();
       }
     });
     player.stream.error.listen((error) {
-      pause();
+      // pause();
       Log.d("$title error $error");
     });
     isPlaying.listen((value) {
