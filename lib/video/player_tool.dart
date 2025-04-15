@@ -15,7 +15,7 @@ class PlayerTool {
   List<VideoInfo> overInit = [];
   int nowPage = 0;
   // 实际是load+1个视频
-  int load = 4;
+  int load = 5;
 
   static Future<void> getVideos() async {
     final String loacl = 'http://${BaseUrl.url}:$normalPort';
@@ -38,7 +38,9 @@ class PlayerTool {
     int i = 0;
     for (var video in videoList) {
       bool success = await video.init();
-      if (success) overInit.add(video);
+      if (success) {
+        overInit.add(video);
+      }
       i++;
       if (i == load) break;
     }
@@ -51,7 +53,8 @@ class PlayerTool {
     // 当前页数
     nowPage = videoPageviewController.page!.toInt();
     // 判断下一个页面的内容是否存在
-    var coming = nowPage + 1 < videoList.length ? videoList[nowPage + 1] : null;
+    final coming =
+        nowPage + 1 < videoList.length ? videoList[nowPage + 1] : null;
     // 判断这个视频是否已经被预加载过，如果没被加载过，就加载
     if (coming != null && !overInit.contains(coming)) {
       coming.init().then((success) {
@@ -62,7 +65,7 @@ class PlayerTool {
     }
     // 如果已经初始化的视频过多，释放先初始化的视频
     if (overInit.length > load) {
-      var toRemove = overInit.first;
+      final toRemove = overInit.first;
       toRemove.dispose();
       overInit.remove(toRemove);
     }

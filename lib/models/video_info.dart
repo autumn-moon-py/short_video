@@ -17,7 +17,7 @@ class VideoInfo {
 
   var isInited = false.obs;
   var isPlaying = false.obs;
-  var isShow = false.obs;
+  bool isShow = false;
   var isDispose = false.obs;
   var showTitle = true.obs;
   var showLoading = true.obs;
@@ -29,7 +29,19 @@ class VideoInfo {
   VideoInfo({required this.title, required this.videoUrl});
 
   void changeShow(bool value) {
-    isShow.value = value;
+    isShow = value;
+    if (isInited.value) {
+      value ? play() : pause();
+    } else {
+      player.stream.buffering.listen((value) {
+        if (isShow && value && !isPlaying.value) {
+          play();
+          Log.d("$title 加载完成,开始播放");
+        }
+      });
+    }
+    showTitle.value = isPortrait();
+    Log.d('$title 显示 $value');
   }
 
   Future<bool> init() async {
@@ -59,7 +71,7 @@ class VideoInfo {
     final info = await DefaultCacheManager().getFileFromCache(title);
     if (info == null) {
       Log.d("未缓存$title,加入缓存");
-      await DefaultCacheManager().downloadFile(videoUrl, key: title);
+      DefaultCacheManager().downloadFile(videoUrl, key: title);
     }
   }
 
@@ -107,11 +119,6 @@ class VideoInfo {
     });
     isPlaying.listen((value) {
       Log.d('$title ${value ? "播放" : "暂停"}');
-    });
-    isShow.listen((value) {
-      value ? play() : pause();
-      showTitle.value = isPortrait();
-      Log.d('$title 显示 $value');
     });
     isDispose.listen((value) {
       Log.d('$title 释放 $value');
