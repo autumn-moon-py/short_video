@@ -25,7 +25,6 @@ class PlayerTool {
       data.forEach((videoList) {
         list.add(VideoInfo(title: videoList[0], videoUrl: videoList[1]));
       });
-
       list.shuffle();
       Log.d('视频列表获取成功:${list.length}');
       videoList = list;
@@ -49,7 +48,7 @@ class PlayerTool {
     });
   }
 
-  void loadVideos(PageController videoPageviewController) {
+  Future<void> loadVideos(PageController videoPageviewController) async {
     // 当前页数
     nowPage = videoPageviewController.page!.toInt();
     // 判断下一个页面的内容是否存在

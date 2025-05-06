@@ -35,8 +35,9 @@ class VideoInfo {
     } else {
       player.stream.buffering.listen((value) {
         if (isShow && value && !isPlaying.value) {
-          play();
+          isInited.value = true;
           Log.d("$title 加载完成,开始播放");
+          play();
         }
       });
     }
@@ -58,6 +59,8 @@ class VideoInfo {
     await player.open(Media(videoPath.isEmpty ? videoUrl : videoPath),
         play: false);
     startInit = false;
+    isDispose.value = false;
+    Log.d("$title 初始化");
     return true;
   }
 
@@ -67,6 +70,7 @@ class VideoInfo {
     isPlaying.value = false;
     isDispose.value = true;
     await player.dispose();
+    Log.d('$title 释放');
     if (!liked) return;
     final info = await DefaultCacheManager().getFileFromCache(title);
     if (info == null) {
@@ -81,6 +85,7 @@ class VideoInfo {
   }
 
   void pause() {
+    if (!isPlaying.value) return;
     player.pause();
     player.seek(Duration.zero);
   }
@@ -92,36 +97,26 @@ class VideoInfo {
   void listen() {
     player.stream.position.listen((value) {
       if (value.inSeconds > 1 && showLoading.value) {
-        Log.d('$title 加载完成');
-        isInited.value = true;
         showLoading.value = false;
-      }
-      if (value > Duration(seconds: 30) && !liked) {
-        liked = true;
-        Log.d("标记$title为喜欢,加入缓存队列");
+        Log.d('$title 缓冲完成');
       }
     });
     player.stream.playing.listen((value) {
+      if (!isInited.value) return;
       isPlaying.value = value;
+      Log.d('$title ${value ? "播放" : "暂停"}');
       showPauseIcon.value = !showLoading.value && !value;
     });
     player.stream.completed.listen((value) {
       if (value) {
         Log.d('$title 播放完成');
-        pause();
-
+        liked = true;
+        Log.d("标记$title为喜欢,加入缓存队列");
         Get.put(VideoListLogic()).nextPage();
       }
     });
     player.stream.error.listen((error) {
-      // pause();
       Log.d("$title error $error");
-    });
-    isPlaying.listen((value) {
-      Log.d('$title ${value ? "播放" : "暂停"}');
-    });
-    isDispose.listen((value) {
-      Log.d('$title 释放 $value');
     });
   }
 }
