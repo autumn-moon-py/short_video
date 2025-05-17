@@ -1,7 +1,7 @@
 name: short_video
 description: "A new Flutter project."
 publish_to: "none"
-version: 1.0.6
+version: 1.0.7
 environment:
   sdk: ">=3.6.0 <4.0.0"
 
@@ -12,14 +12,14 @@ dependencies:
   get: ^4.6.6
   # 后台屏幕保护
   screen_protector: ^1.4.2+1
+  # 本地存储
+  shared_preferences: ^2.3.3
   # 视频播放
   media_kit: ^1.1.11
   media_kit_video: ^1.2.5
   media_kit_libs_video: ^1.0.5
-  # 本地存储
-  shared_preferences: ^2.3.3
   # 缓存管理
-  flutter_cache_manager: ^3.4.1
+  # flutter_cache_manager: ^3.4.1
 
 dev_dependencies:
   flutter_test:

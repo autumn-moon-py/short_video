@@ -1,4 +1,3 @@
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:media_kit_video/media_kit_video.dart';
@@ -51,11 +50,11 @@ class VideoInfo {
     player = Player();
     controller = VideoController(player);
     listen();
-    final info = await DefaultCacheManager().getFileFromCache(title);
-    if (info != null) {
-      Log.d("已缓存$title,直接读取");
-      videoPath = info.file.path;
-    }
+    // final info = await DefaultCacheManager().getFileFromCache(title);
+    // if (info != null) {
+    //   Log.d("已缓存$title,直接读取");
+    //   videoPath = info.file.path;
+    // }
     await player.open(Media(videoPath.isEmpty ? videoUrl : videoPath),
         play: false);
     startInit = false;
@@ -72,11 +71,11 @@ class VideoInfo {
     await player.dispose();
     Log.d('$title 释放');
     if (!liked) return;
-    final info = await DefaultCacheManager().getFileFromCache(title);
-    if (info == null) {
-      Log.d("未缓存$title,加入缓存");
-      DefaultCacheManager().downloadFile(videoUrl, key: title);
-    }
+    // final info = await DefaultCacheManager().getFileFromCache(title);
+    // if (info == null) {
+    //   Log.d("未缓存$title,加入缓存");
+    //   DefaultCacheManager().downloadFile(videoUrl, key: title);
+    // }
   }
 
   Future<void> play() async {

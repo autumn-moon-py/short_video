@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';
 
 import '../models/base_url.dart';
@@ -30,7 +29,7 @@ class VideoListPage extends GetView<VideoListLogic> {
             Get.defaultDialog(
                 title: "修改地址",
                 content: TextField(onSubmitted: (value) {
-                  DefaultCacheManager().emptyCache();
+                  // DefaultCacheManager().emptyCache();
                   BaseUrl.save(value);
                   Get.back();
                 }));
