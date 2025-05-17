@@ -10,6 +10,7 @@ dependencies:
     sdk: flutter
   # 状态管理
   get: ^4.6.6
+  rxdart: ^0.28.0
   # 后台屏幕保护
   screen_protector: ^1.4.2+1
   # 本地存储
@@ -18,6 +19,7 @@ dependencies:
   media_kit: ^1.1.11
   media_kit_video: ^1.2.5
   media_kit_libs_video: ^1.0.5
+  audio_video_progress_bar: ^2.0.3
   # 缓存管理
   # flutter_cache_manager: ^3.4.1
 

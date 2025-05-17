@@ -95,7 +95,7 @@ class VideoInfo {
 
   void listen() {
     player.stream.position.listen((value) {
-      if (value.inSeconds > 1 && showLoading.value) {
+      if (value.inSeconds > 2 && showLoading.value) {
         showLoading.value = false;
         Log.d('$title 缓冲完成');
       }
@@ -118,4 +118,12 @@ class VideoInfo {
       Log.d("$title error $error");
     });
   }
+}
+
+class DurationState {
+  const DurationState(
+      {required this.progress, required this.buffered, required this.total});
+  final Duration progress;
+  final Duration buffered;
+  final Duration total;
 }

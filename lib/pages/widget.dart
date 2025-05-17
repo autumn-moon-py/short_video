@@ -1,6 +1,8 @@
-import 'package:get/get.dart';
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:get/get.dart' as getx;
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../models/video_info.dart';
 import '../utils/logger.dart';
@@ -72,7 +74,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
   /// 视频标题
   Widget titleW() {
-    return Obx(() {
+    return getx.Obx(() {
       return !data.showTitle.value
           ? sb()
           : SafeArea(
@@ -87,17 +89,48 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
   /// 视频组件
   Widget videoW() {
-    return Video(
-        controller: data.controller,
-        fill: Colors.transparent,
-        pauseUponEnteringBackgroundMode: false,
-        resumeUponEnteringForegroundMode: false,
-        controls: (state) => sb());
+    return Stack(children: [
+      Video(
+          controller: data.controller,
+          fill: Colors.transparent,
+          pauseUponEnteringBackgroundMode: false,
+          resumeUponEnteringForegroundMode: false,
+          controls: (state) => sb()),
+    ]);
+  }
+
+  Widget videoProgressBar() {
+    return StreamBuilder<DurationState>(
+        stream: Rx.combineLatest3(
+          data.player.stream.position,
+          data.player.stream.buffer,
+          data.player.stream.duration,
+          (Duration progress, Duration buffered, Duration total) =>
+              DurationState(
+                  progress: progress, buffered: buffered, total: total),
+        ),
+        builder: (context, snapshot) {
+          final durationState = snapshot.data;
+          final progress = durationState?.progress ?? Duration.zero;
+          final buffered = durationState?.buffered ?? Duration.zero;
+          final total = durationState?.total ?? Duration.zero;
+          return Container(
+              alignment: Alignment.bottomCenter,
+              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 25),
+              child: ProgressBar(
+                  progress: progress,
+                  buffered: buffered,
+                  total: total,
+                  timeLabelTextStyle: TextStyle(color: Colors.white),
+                  onSeek: (duration) {
+                    data.player.seek(duration);
+                  }));
+        });
   }
 
   /// 加载组件
   Widget loadingW() {
-    return Obx(() {
+    return getx.Obx(() {
       final show = data.showLoading.value;
       return !show
           ? sb()
@@ -110,7 +143,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
   }
 
   Widget showPauseIcon() {
-    return Obx(() {
+    return getx.Obx(() {
       return !data.showPauseIcon.value
           ? sb()
           : const Center(
@@ -127,6 +160,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       loadingW(),
       showPauseIcon(),
       playOrPauseB(),
+      videoProgressBar()
     ]);
   }
 }
