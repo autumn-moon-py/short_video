@@ -50,11 +50,6 @@ class VideoInfo {
     player = Player();
     controller = VideoController(player);
     listen();
-    // final info = await DefaultCacheManager().getFileFromCache(title);
-    // if (info != null) {
-    //   Log.d("已缓存$title,直接读取");
-    //   videoPath = info.file.path;
-    // }
     await player.open(Media(videoPath.isEmpty ? videoUrl : videoPath),
         play: false);
     startInit = false;
@@ -71,16 +66,11 @@ class VideoInfo {
     await player.dispose();
     Log.d('$title 释放');
     if (!liked) return;
-    // final info = await DefaultCacheManager().getFileFromCache(title);
-    // if (info == null) {
-    //   Log.d("未缓存$title,加入缓存");
-    //   DefaultCacheManager().downloadFile(videoUrl, key: title);
-    // }
   }
 
   Future<void> play() async {
     if (isPlaying.value) return;
-    player.play();
+    await player.play();
   }
 
   void pause() {
@@ -97,7 +87,8 @@ class VideoInfo {
     player.stream.position.listen((value) {
       if (value.inSeconds > 2 && showLoading.value) {
         showLoading.value = false;
-        Log.d('$title 缓冲完成');
+        Log.d('$title 缓冲完成,${value.inSeconds}');
+        player.seek(Duration.zero);
       }
     });
     player.stream.playing.listen((value) {
@@ -114,16 +105,5 @@ class VideoInfo {
         Get.put(VideoListLogic()).nextPage();
       }
     });
-    player.stream.error.listen((error) {
-      Log.d("$title error $error");
-    });
   }
-}
-
-class DurationState {
-  const DurationState(
-      {required this.progress, required this.buffered, required this.total});
-  final Duration progress;
-  final Duration buffered;
-  final Duration total;
 }

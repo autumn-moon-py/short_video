@@ -1,9 +1,6 @@
-import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:get/get.dart' as getx;
 import 'package:flutter/material.dart';
 import 'package:media_kit_video/media_kit_video.dart';
-import 'package:rxdart/rxdart.dart';
-
 import '../models/video_info.dart';
 import '../utils/logger.dart';
 import '../utils/tools.dart';
@@ -92,40 +89,22 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     return Stack(children: [
       Video(
           controller: data.controller,
-          fill: Colors.transparent,
-          pauseUponEnteringBackgroundMode: false,
-          resumeUponEnteringForegroundMode: false,
-          controls: (state) => sb()),
+          controls: (state) {
+            return Stack(children: [
+              Container(
+                  alignment: Alignment.bottomCenter,
+                  child: MaterialPositionIndicator(
+                    style: TextStyle(
+                      color: Colors.lightBlue,
+                    ),
+                  )),
+              Container(
+                  alignment: Alignment.bottomCenter,
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                  child: MaterialSeekBar()),
+            ]);
+          })
     ]);
-  }
-
-  Widget videoProgressBar() {
-    return StreamBuilder<DurationState>(
-        stream: Rx.combineLatest3(
-          data.player.stream.position,
-          data.player.stream.buffer,
-          data.player.stream.duration,
-          (Duration progress, Duration buffered, Duration total) =>
-              DurationState(
-                  progress: progress, buffered: buffered, total: total),
-        ),
-        builder: (context, snapshot) {
-          final durationState = snapshot.data;
-          final progress = durationState?.progress ?? Duration.zero;
-          final buffered = durationState?.buffered ?? Duration.zero;
-          final total = durationState?.total ?? Duration.zero;
-          return Container(
-              alignment: Alignment.bottomCenter,
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 25),
-              child: ProgressBar(
-                  progress: progress,
-                  buffered: buffered,
-                  total: total,
-                  timeLabelTextStyle: TextStyle(color: Colors.white),
-                  onSeek: (duration) {
-                    data.player.seek(duration);
-                  }));
-        });
   }
 
   /// 加载组件
@@ -160,7 +139,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       loadingW(),
       showPauseIcon(),
       playOrPauseB(),
-      videoProgressBar()
     ]);
   }
 }
