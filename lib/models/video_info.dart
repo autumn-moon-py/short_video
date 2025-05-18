@@ -60,6 +60,7 @@ class VideoInfo {
 
   Future<void> dispose() async {
     if (isDispose.value) return;
+    first = true;
     isInited.value = false;
     isPlaying.value = false;
     isDispose.value = true;
@@ -83,12 +84,17 @@ class VideoInfo {
     player.playOrPause();
   }
 
+  bool first = true;
+
   void listen() {
+    player.stream.buffering.listen((value) {
+      showLoading.value = value;
+    });
     player.stream.position.listen((value) {
-      if (value.inSeconds > 2 && showLoading.value) {
-        showLoading.value = false;
-        Log.d('$title 缓冲完成,${value.inSeconds}');
+      if (value.inSeconds > 2 && first) {
+        first = false;
         player.seek(Duration.zero);
+        Log.d('$title 缓冲完成');
       }
     });
     player.stream.playing.listen((value) {

@@ -59,16 +59,6 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
     data.showTitle.value = !data.showTitle.value;
   }
 
-  /// 播放按钮
-  Widget playOrPauseB() {
-    return Stack(children: [
-      GestureDetector(
-          onDoubleTap: () => data.playOrPause(),
-          onLongPress: () => onLongPress(),
-          child: Container(color: Colors.transparent))
-    ]);
-  }
-
   /// 视频标题
   Widget titleW() {
     return getx.Obx(() {
@@ -86,25 +76,26 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
 
   /// 视频组件
   Widget videoW() {
-    return Stack(children: [
-      Video(
-          controller: data.controller,
-          controls: (state) {
-            return Stack(children: [
-              Container(
-                  alignment: Alignment.bottomCenter,
-                  child: MaterialPositionIndicator(
-                    style: TextStyle(
-                      color: Colors.lightBlue,
-                    ),
-                  )),
-              Container(
-                  alignment: Alignment.bottomCenter,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                  child: MaterialSeekBar()),
-            ]);
-          })
-    ]);
+    return GestureDetector(
+        onDoubleTap: () => data.playOrPause(),
+        onLongPress: () => onLongPress(),
+        child: Video(
+            controller: data.controller,
+            controls: (state) {
+              return Stack(children: [
+                Container(
+                    alignment: Alignment.bottomCenter,
+                    child: MaterialPositionIndicator(
+                      style: TextStyle(
+                        color: Colors.lightBlue,
+                      ),
+                    )),
+                Container(
+                    alignment: Alignment.bottomCenter,
+                    padding: EdgeInsets.symmetric(horizontal: 30, vertical: 30),
+                    child: MaterialSeekBar()),
+              ]);
+            }));
   }
 
   /// 加载组件
@@ -138,7 +129,7 @@ class _VideoWidgetState extends State<VideoWidget> with WidgetsBindingObserver {
       titleW(),
       loadingW(),
       showPauseIcon(),
-      playOrPauseB(),
+      // playOrPauseB(),
     ]);
   }
 }
