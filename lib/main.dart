@@ -11,7 +11,7 @@ import 'pages/logic.dart';
 import 'pages/page.dart';
 import 'video/player_tool.dart';
 
-const normalUrl = "192.168.1.5";
+const normalUrl = "192.168.0.101";
 const normalPort = "9090";
 
 Future<void> main() async {

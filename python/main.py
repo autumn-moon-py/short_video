@@ -6,9 +6,8 @@ from fastapi import FastAPI
 
 
 app = FastAPI(name="file_server")
-VIDEO_EXTENSIONS = [".m3u8",".webm"]
+VIDEO_EXTENSIONS = [".webm"]
 video_dir = "E:/video/webm"
-# video_dir = "E:/video/hls"
 host = "192.168.1.5"
 
 

@@ -9,7 +9,6 @@ import '../utils/tools.dart';
 class VideoInfo {
   String title = '';
   String videoUrl = '';
-  String videoPath = "";
 
   late Player player;
   late VideoController controller;
@@ -50,8 +49,7 @@ class VideoInfo {
     player = Player();
     controller = VideoController(player);
     listen();
-    await player.open(Media(videoPath.isEmpty ? videoUrl : videoPath),
-        play: false);
+    await player.open(Media(videoUrl), play: false);
     startInit = false;
     isDispose.value = false;
     Log.d("$title 初始化");
@@ -60,7 +58,6 @@ class VideoInfo {
 
   Future<void> dispose() async {
     if (isDispose.value) return;
-    first = true;
     isInited.value = false;
     isPlaying.value = false;
     isDispose.value = true;
@@ -84,16 +81,10 @@ class VideoInfo {
     player.playOrPause();
   }
 
-  bool first = true;
-
   void listen() {
-    player.stream.buffering.listen((value) {
-      showLoading.value = value;
-    });
     player.stream.position.listen((value) {
-      if (value.inSeconds > 2 && first) {
-        first = false;
-        player.seek(Duration.zero);
+      if (value.inSeconds > 2 && showLoading.value) {
+        showLoading.value = false;
         Log.d('$title 缓冲完成');
       }
     });
@@ -110,6 +101,9 @@ class VideoInfo {
         Log.d("标记$title为喜欢,加入缓存队列");
         Get.put(VideoListLogic()).nextPage();
       }
+    });
+    player.stream.error.listen((e) {
+      Log.d("$title,错误:$e");
     });
   }
 }
