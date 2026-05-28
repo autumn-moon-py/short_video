@@ -1,0 +1,7 @@
+.dart_tool/
+.packages
+
+manual_test_assets/
+manual_test_downloads/
+
+*.log

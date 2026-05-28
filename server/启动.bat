@@ -1,0 +1,1 @@
+dart run -DFILE_SERVER_ROOT_DIR=E:/video/output bin/main.dart
