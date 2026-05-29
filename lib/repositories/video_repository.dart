@@ -46,6 +46,10 @@ class VideoRepository {
   Future<void> clearCachedServer() {
     return _discoveryService.clearCache();
   }
+
+  Future<bool> hasCachedServer() {
+    return _discoveryService.hasCachedServer();
+  }
 }
 
 class VideoFeedPayload {

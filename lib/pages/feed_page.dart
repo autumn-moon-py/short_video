@@ -1,10 +1,12 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:media_kit_video/media_kit_video.dart';
 
 import '../controllers/feed_controller.dart';
+import '../utils/app_logger.dart';
 import '../utils/duration_text.dart';
 
 class FeedPage extends GetView<FeedController> {
@@ -16,9 +18,12 @@ class FeedPage extends GetView<FeedController> {
       body: Obx(() {
         switch (controller.screenState.value) {
           case FeedScreenState.loading:
+            final hasCache = controller.hasCachedServer.value;
             return _StatusView(
-              title: '正在查找服务',
-              message: '正在后台扫描 192.168 网段的视频服务',
+              title: hasCache ? '正在加载视频' : '正在查找服务',
+              message: hasCache
+                  ? '正在连接视频服务'
+                  : '正在后台扫描 192.168 网段的视频服务',
               loading: true,
               onRetry: controller.retryDiscovery,
             );
@@ -27,6 +32,7 @@ class FeedPage extends GetView<FeedController> {
               title: '连接失败',
               message: controller.errorMessage.value,
               onRetry: controller.retryDiscovery,
+              showExportLog: true,
             );
           case FeedScreenState.empty:
             return _StatusView(
@@ -738,12 +744,14 @@ class _StatusView extends StatelessWidget {
     required this.message,
     required this.onRetry,
     this.loading = false,
+    this.showExportLog = false,
   });
 
   final String title;
   final String message;
   final VoidCallback onRetry;
   final bool loading;
+  final bool showExportLog;
 
   @override
   Widget build(BuildContext context) {
@@ -797,11 +805,44 @@ class _StatusView extends StatelessWidget {
                   ),
                   child: const Text('重新扫描'),
                 ),
+                if (showExportLog) ...[
+                  const SizedBox(height: 12),
+                  TextButton(
+                    onPressed: () => _exportLog(context),
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white54,
+                    ),
+                    child: const Text('导出日志'),
+                  ),
+                ],
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _exportLog(BuildContext context) async {
+    try {
+      final path = await AppLogger.exportToFile();
+      if (!context.mounted) return;
+      final fileName = path.split(RegExp(r'[/\\]')).last;
+      await Clipboard.setData(ClipboardData(text: path));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('日志已导出 ($fileName)，完整路径已复制到剪贴板'),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('导出失败: $e'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 }

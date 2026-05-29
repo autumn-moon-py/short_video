@@ -11,6 +11,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../models/video_item.dart';
 import '../repositories/video_repository.dart';
+import '../utils/app_logger.dart';
 
 enum FeedScreenState { loading, ready, empty, error }
 
@@ -34,6 +35,7 @@ class FeedController extends GetxController {
   final RxString serverHost = ''.obs;
   final RxnDouble draggingPositionMs = RxnDouble();
   final RxBool isPageTransitioning = false.obs;
+  final RxBool hasCachedServer = false.obs;
 
   final Map<int, ManagedVideoPlayer> _players = <int, ManagedVideoPlayer>{};
   final Map<int, Duration> _resumePositions = <int, Duration>{};
@@ -50,7 +52,7 @@ class FeedController extends GetxController {
   Future<void>? _coverCacheInitTask;
 
   void _log(String message) {
-    debugPrint('[FeedController] $message');
+    AppLogger.debug('FeedCtrl', message);
   }
 
   @override
@@ -75,6 +77,7 @@ class FeedController extends GetxController {
     _windowSyncVersion++;
     _log('loadFeed start, forceRescan=$forceRescan');
     screenState.value = FeedScreenState.loading;
+    hasCachedServer.value = !forceRescan && await _repository.hasCachedServer();
     errorMessage.value = '';
     showChrome.value = false;
     draggingPositionMs.value = null;
@@ -234,6 +237,17 @@ class FeedController extends GetxController {
     await loadFeed(forceRescan: true);
   }
 
+  Future<String?> exportLogs() async {
+    try {
+      final path = await AppLogger.exportToFile();
+      _log('logs exported to: $path');
+      return path;
+    } catch (e) {
+      _log('log export failed: $e');
+      return null;
+    }
+  }
+
   Future<void> goToNextVideo() async {
     _maybeAppendRandomLoop();
     if (currentIndex.value >= videos.length - 1) {
@@ -305,7 +319,7 @@ class FeedController extends GetxController {
     }
 
     if (syncVersion != _windowSyncVersion) {
-      _log('syncWindowAroundCurrent[$syncVersion] aborted before release');
+      _log('syncWindowAroundCurrent[$syncVersion] aborted after ensurePlayer');
       return;
     }
 
@@ -627,7 +641,7 @@ class ManagedVideoPlayer {
   VideoController? get videoController => _videoController;
 
   void _log(String message) {
-    debugPrint('[ManagedVideoPlayer#$index][${item.title}] $message');
+    AppLogger.debug('Player#$index', '[${item.title}] $message');
   }
 
   Future<void> preload({required Duration startAt}) async {
@@ -647,19 +661,32 @@ class ManagedVideoPlayer {
     );
     _bindStreams();
 
-    try {
-      await player.open(Media(item.url), play: false);
-      if (startAt > Duration.zero) {
-        await player.seek(startAt);
+    const maxAttempts = 3;
+    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+      if (_disposed) break;
+      try {
+        await player.open(Media(item.url), play: false);
+        if (startAt > Duration.zero) {
+          await player.seek(startAt);
+        }
+        _log('preload open success (attempt $attempt)');
+        opening.value = false;
+        return;
+      } catch (exception, stackTrace) {
+        if (attempt < maxAttempts && !_disposed) {
+          AppLogger.warn('Player#$index',
+              'preload attempt $attempt failed, retrying in 500ms: ${item.url}');
+          await Future<void>.delayed(const Duration(milliseconds: 500));
+          continue;
+        }
+        AppLogger.error('Player#$index',
+            'preload failed after $maxAttempts attempts: ${item.url}',
+            exception, stackTrace);
+        error.value = '视频加载失败';
       }
-      _log('preload open success');
-    } catch (exception, stackTrace) {
-      _log('preload failed: $exception\n$stackTrace');
-      error.value = '视频加载失败';
-    } finally {
-      opening.value = false;
-      _log('preload end, opening=${opening.value}, error=${error.value}');
     }
+    opening.value = false;
+    _log('preload end, opening=${opening.value}, error=${error.value}');
   }
 
   Future<void> ensureVideoController() async {
@@ -707,7 +734,8 @@ class ManagedVideoPlayer {
       }
       _log('cover capture skipped: no frame available yet');
     } catch (exception, stackTrace) {
-      _log('cover capture failed: $exception\n$stackTrace');
+      AppLogger.error('Player#$index', 'cover capture failed',
+          exception, stackTrace);
     } finally {
       _capturingCover = false;
     }
@@ -726,7 +754,7 @@ class ManagedVideoPlayer {
       _log('play requested');
       await player.play();
     } catch (exception, stackTrace) {
-      _log('play failed: $exception\n$stackTrace');
+      AppLogger.error('Player#$index', 'play failed', exception, stackTrace);
       error.value = '视频播放失败';
     }
   }
@@ -739,7 +767,7 @@ class ManagedVideoPlayer {
       _log('pause requested');
       await player.pause();
     } catch (exception, stackTrace) {
-      _log('pause failed: $exception\n$stackTrace');
+      AppLogger.error('Player#$index', 'pause failed', exception, stackTrace);
     }
   }
 
@@ -751,7 +779,7 @@ class ManagedVideoPlayer {
       _log('seek requested: targetMs=${value.inMilliseconds}');
       await player.seek(value);
     } catch (exception, stackTrace) {
-      _log('seek failed: $exception\n$stackTrace');
+      AppLogger.error('Player#$index', 'seek failed', exception, stackTrace);
     }
   }
 
