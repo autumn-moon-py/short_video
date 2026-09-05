@@ -6,7 +6,6 @@ const defaultRootDir = 'D:/sync/video/output';
 const defaultBindHost = '0.0.0.0';
 const defaultApiPort = 9090;
 const defaultHealthMessage = '服务器正常';
-const rootDirDefineKey = 'FILE_SERVER_ROOT_DIR';
 
 class ServerConfig {
   const ServerConfig({
@@ -30,11 +29,26 @@ class ServerConfig {
   final int? publicPort;
 
   factory ServerConfig.fromDefines() {
+    const rootDir =
+        String.fromEnvironment('FILE_SERVER_ROOT_DIR', defaultValue: defaultRootDir);
+    const bindHost =
+        String.fromEnvironment('FILE_SERVER_BIND_HOST', defaultValue: defaultBindHost);
+    const apiPort =
+        int.fromEnvironment('FILE_SERVER_API_PORT', defaultValue: defaultApiPort);
+    const healthMessage =
+        String.fromEnvironment('FILE_SERVER_HEALTH_MSG', defaultValue: defaultHealthMessage);
+    const publicSchemeRaw = String.fromEnvironment('FILE_SERVER_PUBLIC_SCHEME');
+    const publicHostRaw = String.fromEnvironment('FILE_SERVER_PUBLIC_HOST');
+    const publicPortRaw = int.fromEnvironment('FILE_SERVER_PUBLIC_PORT', defaultValue: 0);
+
     return ServerConfig(
-      rootDir: const String.fromEnvironment(
-        rootDirDefineKey,
-        defaultValue: defaultRootDir,
-      ),
+      rootDir: rootDir,
+      bindHost: bindHost,
+      apiPort: apiPort,
+      healthMessage: healthMessage,
+      publicScheme: publicSchemeRaw.isEmpty ? null : publicSchemeRaw,
+      publicHost: publicHostRaw.isEmpty ? null : publicHostRaw,
+      publicPort: publicPortRaw > 0 ? publicPortRaw : null,
     );
   }
 }
@@ -58,6 +72,7 @@ Future<void> handleRequest(
   try {
     if (request.method != 'GET') {
       response.statusCode = HttpStatus.methodNotAllowed;
+      response.headers.set(HttpHeaders.allowHeader, 'GET');
       await writeJson(response, {'error': 'Method Not Allowed'});
       return;
     }
@@ -68,6 +83,13 @@ Future<void> handleRequest(
     }
 
     if (request.uri.path == '/video') {
+      if (!Directory(config.rootDir).existsSync()) {
+        response.statusCode = HttpStatus.internalServerError;
+        await writeJson(response, {
+          'error': 'root directory not found: ${config.rootDir}',
+        });
+        return;
+      }
       final videoFiles = findVideos(
         config.rootDir,
         videoExtensions: config.videoExtensions,
@@ -98,8 +120,14 @@ Future<void> handleRequest(
 
     await writeFile(request, response, staticFile);
   } catch (error) {
-    response.statusCode = HttpStatus.internalServerError;
-    await writeJson(response, {'error': error.toString()});
+    stderr.writeln('handleRequest error: $error');
+    try {
+      response.statusCode = HttpStatus.internalServerError;
+      await writeJson(response, {'error': 'Internal Server Error'});
+    } on Object catch (e, st) {
+      stderr.writeln('handleRequest write error after exception: $e\n$st');
+      await response.close();
+    }
   }
 }
 
@@ -181,6 +209,16 @@ File? resolveStaticFile(Uri uri, String rootDir) {
     safeSegments.add(segment);
   }
 
+  const blockedExtensions = [
+    '.exe', '.bat', '.cmd', '.ps1', '.sh', '.dll', '.com', '.msi', '.jar',
+  ];
+  for (final segment in safeSegments) {
+    final lower = segment.toLowerCase();
+    if (blockedExtensions.any(lower.endsWith)) {
+      return null;
+    }
+  }
+
   final relativePath = safeSegments.join(Platform.pathSeparator);
   final candidate = File('$root${Platform.pathSeparator}$relativePath');
   final candidatePath = candidate.absolute.path;
@@ -223,14 +261,22 @@ Future<void> writeFile(
       HttpHeaders.contentRangeHeader,
       'bytes ${range.start}-${range.end}/$fileLength',
     );
-    await response.addStream(file.openRead(range.start, range.end + 1));
+    await _safeAddStream(response, file.openRead(range.start, range.end + 1));
     await response.close();
     return;
   }
 
   response.headers.contentLength = fileLength;
-  await response.addStream(file.openRead());
+  await _safeAddStream(response, file.openRead());
   await response.close();
+}
+
+Future<void> _safeAddStream(HttpResponse response, Stream<List<int>> stream) async {
+  try {
+    await response.addStream(stream);
+  } on Object catch (e, st) {
+    stderr.writeln('writeFile stream error: $e\n$st');
+  }
 }
 
 ByteRange? _parseByteRange(String header, int fileLength) {

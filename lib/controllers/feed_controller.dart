@@ -40,7 +40,9 @@ class FeedController extends GetxController {
   final Map<int, ManagedVideoPlayer> _players = <int, ManagedVideoPlayer>{};
   final Map<int, Duration> _resumePositions = <int, Duration>{};
   final Map<int, Uint8List> _coverCache = <int, Uint8List>{};
+  final List<int> _preloadQueue = <int>[];
   List<VideoItem> _loopSeed = <VideoItem>[];
+  bool _drainingPreloads = false;
   Timer? _chromeTimer;
   bool _bootstrapping = false;
   int _windowSyncVersion = 0;
@@ -309,7 +311,8 @@ class FeedController extends GetxController {
       'syncWindowAroundCurrent[$syncVersion]: current=$current desired=$ordered',
     );
     for (final index in ordered) {
-      await _ensurePlayer(index);
+      // 预加载只创建并入队，不阻塞窗口同步；preload 由单 worker 串行 drain
+      await _ensurePlayer(index, awaitPreload: false);
       if (syncVersion != _windowSyncVersion) {
         _log(
           'syncWindowAroundCurrent[$syncVersion] aborted during ensurePlayer',
@@ -333,6 +336,8 @@ class FeedController extends GetxController {
         _log('releasing player at index=$index');
         await player.dispose();
       }
+      // 释放出窗口即清掉内存封面缓存（磁盘文件缓存仍在，回滑时从文件读取）
+      _coverCache.remove(index);
       update(['video_$index']);
       if (syncVersion != _windowSyncVersion) {
         _log('syncWindowAroundCurrent[$syncVersion] aborted during release');
@@ -349,13 +354,36 @@ class FeedController extends GetxController {
     }
   }
 
-  Future<void> _ensurePlayer(int index) async {
-    if (index < 0 || index >= videos.length || _players.containsKey(index)) {
+  /// 确保 index 页的 player 已创建。
+  /// - awaitPreload=true：当前页/回滑场景，等 preload 完成（含从队列插队），保证能播。
+  /// - awaitPreload=false：窗口预加载，仅创建并入队，不阻塞调用方。
+  Future<void> _ensurePlayer(int index, {bool awaitPreload = true}) async {
+    final existing = _players[index];
+    if (existing != null) {
       if (index < 0 || index >= videos.length) {
-        _log(
-          'ensurePlayer ignored: invalid index=$index total=${videos.length}',
-        );
+        return;
       }
+      // 需要就绪但仍在等待队列：插队同步 preload
+      if (awaitPreload &&
+          !existing.isPreloaded &&
+          !existing.isDisposed) {
+        _preloadQueue.remove(index);
+        _log('ensurePlayer: 当前页插队 preload index=$index');
+        await existing.preload(
+          startAt: _resumePositions[index] ?? Duration.zero,
+        );
+        if (!existing.isDisposed) {
+          unawaited(_captureAndStoreCover(index, existing));
+        }
+        update(['video_$index', 'current_controls']);
+      }
+      return;
+    }
+
+    if (index < 0 || index >= videos.length) {
+      _log(
+        'ensurePlayer ignored: invalid index=$index total=${videos.length}',
+      );
       return;
     }
 
@@ -367,9 +395,49 @@ class FeedController extends GetxController {
 
     _players[index] = player;
     update(['video_$index', 'current_controls']);
-    await player.preload(startAt: _resumePositions[index] ?? Duration.zero);
-    unawaited(_captureAndStoreCover(index, player));
-    update(['video_$index', 'current_controls']);
+    if (awaitPreload) {
+      await player.preload(startAt: _resumePositions[index] ?? Duration.zero);
+      if (_players[index] == player && !player.isDisposed) {
+        unawaited(_captureAndStoreCover(index, player));
+      }
+      update(['video_$index', 'current_controls']);
+    } else {
+      _enqueuePreload(index);
+    }
+  }
+
+  /// 窗口预加载入队，由单个 worker 串行 drain（不并行，避免多实例并发解码）。
+  void _enqueuePreload(int index) {
+    _preloadQueue.add(index);
+    unawaited(_drainPreloadQueue());
+  }
+
+  Future<void> _drainPreloadQueue() async {
+    if (_drainingPreloads) {
+      return;
+    }
+    _drainingPreloads = true;
+    try {
+      while (_preloadQueue.isNotEmpty) {
+        final index = _preloadQueue.removeAt(0);
+        final player = _players[index];
+        if (player == null || player.isDisposed) {
+          continue;
+        }
+        _log('preload queue start: index=$index');
+        await player.preload(
+          startAt: _resumePositions[index] ?? Duration.zero,
+        );
+        if (player.isDisposed || _players[index] != player) {
+          continue;
+        }
+        unawaited(_captureAndStoreCover(index, player));
+        update(['video_$index', 'current_controls']);
+        _log('preload queue done: index=$index');
+      }
+    } finally {
+      _drainingPreloads = false;
+    }
   }
 
   ManagedVideoPlayer _createManagedPlayer(
@@ -580,15 +648,17 @@ class FeedController extends GetxController {
   }
 
   @override
-  void onClose() {
+  Future<void> onClose() async {
     _windowSyncVersion++;
     _chromeTimer?.cancel();
-    unawaited(
-      SystemChrome.setPreferredOrientations(const [
+    try {
+      await SystemChrome.setPreferredOrientations(const [
         DeviceOrientation.portraitUp,
-      ]),
-    );
-    unawaited(_disposeAllPlayers());
+      ]);
+    } on Object catch (_) {
+      // 系统不支持时忽略
+    }
+    await _disposeAllPlayers();
     pageController.dispose();
     super.onClose();
   }
@@ -635,10 +705,15 @@ class ManagedVideoPlayer {
   final List<StreamSubscription<dynamic>> _subscriptions =
       <StreamSubscription<dynamic>>[];
   bool _preloaded = false;
+  bool _preloading = false;
   bool _capturingCover = false;
   bool _disposed = false;
+  bool _playWhenReady = false;
 
   VideoController? get videoController => _videoController;
+
+  bool get isDisposed => _disposed;
+  bool get isPreloaded => _preloaded;
 
   void _log(String message) {
     AppLogger.debug('Player#$index', '[${item.title}] $message');
@@ -656,37 +731,143 @@ class ManagedVideoPlayer {
     }
 
     _preloaded = true;
+    _preloading = true;
     _log(
       'preload start, url=${item.url}, resumeAtMs=${startAt.inMilliseconds}',
     );
     _bindStreams();
 
-    const maxAttempts = 3;
-    for (var attempt = 1; attempt <= maxAttempts; attempt++) {
-      if (_disposed) break;
-      try {
-        await player.open(Media(item.url), play: false);
-        if (startAt > Duration.zero) {
-          await player.seek(startAt);
+    try {
+      const maxAttempts = 3;
+      for (var attempt = 1; attempt <= maxAttempts; attempt++) {
+        if (_disposed) break;
+        try {
+          // 先清除之前的错误状态
+          error.value = '';
+          opening.value = true;
+
+          await player.open(Media(item.url), play: false);
+
+          // player.open() 返回后，media_kit 可能还会异步报告错误
+          // （如 "Failed to open ..."），通过 stream.error 发出。
+          // 需要等待 opening 状态变化或 error 流来确认是否真正成功。
+          final openOk = await _waitForOpenResult();
+          if (openOk) {
+            if (startAt > Duration.zero) {
+              await player.seek(startAt);
+            }
+            _log('preload open success (attempt $attempt)');
+            opening.value = false;
+            _maybePlayWhenReady();
+            return;
+          }
+
+          // open 失败（stream.error 触发），尝试重试
+          if (attempt < maxAttempts && !_disposed) {
+            AppLogger.warn('Player#$index',
+                'preload attempt $attempt failed (stream.error), retrying in 800ms: ${item.url}');
+            await player.stop();
+            await Future<void>.delayed(const Duration(milliseconds: 800));
+            continue;
+          }
+
+          AppLogger.error('Player#$index',
+              'preload failed after $maxAttempts attempts: ${item.url}',
+              null, null);
+          error.value = '视频加载失败';
+        } catch (exception, stackTrace) {
+          // player.open() 本身抛出异常（如 URL 格式错误）
+          if (attempt < maxAttempts && !_disposed) {
+            AppLogger.error('Player#$index',
+                'preload attempt $attempt threw exception, retrying in 800ms: ${item.url}',
+                exception, stackTrace);
+            await Future<void>.delayed(const Duration(milliseconds: 800));
+            continue;
+          }
+          AppLogger.error('Player#$index',
+              'preload failed after $maxAttempts attempts: ${item.url}',
+              exception, stackTrace);
+          error.value = '视频加载失败';
         }
-        _log('preload open success (attempt $attempt)');
-        opening.value = false;
-        return;
-      } catch (exception, stackTrace) {
-        if (attempt < maxAttempts && !_disposed) {
-          AppLogger.warn('Player#$index',
-              'preload attempt $attempt failed, retrying in 500ms: ${item.url}');
-          await Future<void>.delayed(const Duration(milliseconds: 500));
-          continue;
-        }
-        AppLogger.error('Player#$index',
-            'preload failed after $maxAttempts attempts: ${item.url}',
-            exception, stackTrace);
-        error.value = '视频加载失败';
+      }
+      opening.value = false;
+      _log('preload end, opening=${opening.value}, error=${error.value}');
+    } finally {
+      _preloading = false;
+    }
+  }
+
+  /// 等待 player.open() 的真正结果。
+  /// player.open() 返回后，media_kit 可能还会异步通过 stream.error
+  /// 报告 "Failed to open" 错误。此方法等待最多 5 秒。
+  /// 判定成功信号：视频宽度出现 或 duration>0（媒体已解析）；error 触发即失败。
+  Future<bool> _waitForOpenResult() async {
+    // 如果已经有错误（stream.error 在 await open 期间就触发了）
+    if (error.value.isNotEmpty) {
+      return false;
+    }
+
+    // 如果 opening 已经变为 false（某些情况下 open 成功会很快）
+    if (!opening.value) {
+      return true;
+    }
+
+    final completer = Completer<bool>();
+    StreamSubscription<String>? errorSub;
+    StreamSubscription<int?>? widthSub;
+    StreamSubscription<Duration>? durationSub;
+
+    void complete(bool result) {
+      if (!completer.isCompleted) {
+        completer.complete(result);
       }
     }
-    opening.value = false;
-    _log('preload end, opening=${opening.value}, error=${error.value}');
+
+    errorSub = player.stream.error.listen((message) {
+      _log('stream.error during waitForOpen: $message');
+      complete(false);
+    });
+
+    // 视频宽度从 null 变为非 null 说明媒体已成功打开并解析了视频轨道
+    widthSub = player.stream.width.listen((width) {
+      if (width != null && width > 0 && !completer.isCompleted) {
+        _log('stream.width=$width during waitForOpen, open success');
+        complete(true);
+      }
+    });
+
+    // duration>0 说明媒体元数据已解析（部分视频 width 事件延迟，如 4K），
+    // 可提前判成功，避免死等 width 拖满超时。
+    durationSub = player.stream.duration.listen((duration) {
+      if (duration > Duration.zero && !completer.isCompleted) {
+        _log('stream.duration=${duration.inMilliseconds}ms during waitForOpen, '
+            'open success');
+        complete(true);
+      }
+    });
+
+    // 超时保护：5 秒后如果没有任何信号，检查当前状态
+    Future<void>.delayed(const Duration(seconds: 5)).then((_) {
+      if (!completer.isCompleted) {
+        if (error.value.isNotEmpty) {
+          complete(false);
+        } else if (!opening.value) {
+          complete(true);
+        } else {
+          // 超时但无明确错误，视为成功（可能只是网络慢）
+          _log('waitForOpen timeout, assuming success');
+          complete(true);
+        }
+      }
+    });
+
+    try {
+      return await completer.future;
+    } finally {
+      await errorSub.cancel();
+      await widthSub.cancel();
+      await durationSub.cancel();
+    }
   }
 
   Future<void> ensureVideoController() async {
@@ -750,6 +931,29 @@ class ManagedVideoPlayer {
       _log('play skipped: error=${error.value}');
       return;
     }
+    // 仍在 open 中（预加载未完成）：登记待播标记立即返回，不阻塞调用方，
+    // preload 成功（opening=false）后会通过 _maybePlayWhenReady 真正播放。
+    if (opening.value) {
+      _playWhenReady = true;
+      _log('play deferred: still opening, will auto-play on ready');
+      return;
+    }
+    await _startPlayback();
+  }
+
+  /// opening 完成后的自动补播：仅当曾登记待播且状态可用时真正播放。
+  void _maybePlayWhenReady() {
+    if (!_playWhenReady ||
+        _disposed ||
+        opening.value ||
+        error.value.isNotEmpty) {
+      return;
+    }
+    _playWhenReady = false;
+    unawaited(_startPlayback());
+  }
+
+  Future<void> _startPlayback() async {
     try {
       _log('play requested');
       await player.play();
@@ -763,6 +967,7 @@ class ManagedVideoPlayer {
     if (_disposed) {
       return;
     }
+    _playWhenReady = false;
     try {
       _log('pause requested');
       await player.pause();
@@ -788,9 +993,18 @@ class ManagedVideoPlayer {
       return;
     }
     _disposed = true;
+    _playWhenReady = false;
     _log('dispose start');
     for (final subscription in _subscriptions) {
       await subscription.cancel();
+    }
+    // 先 stop 卸载媒体：Android 下 surface 归零的 VideoOutput.Resize 会在
+    // player 仍存活时处理完，避免 dispose 后 media_kit_video 的 widListener
+    // 对已释放 player 调用 seek 抛 "[Player] has been disposed"。
+    try {
+      await player.stop();
+    } on Object catch (e) {
+      _log('dispose stop error: $e');
     }
     await player.dispose();
     _log('dispose end');
@@ -862,6 +1076,10 @@ class ManagedVideoPlayer {
     _subscriptions.add(
       player.stream.error.listen((message) {
         _log('stream.error=$message');
+        // preload 重试期间不设置 error.value，由 _waitForOpenResult 处理
+        if (_preloading) {
+          return;
+        }
         error.value = message.isEmpty ? '视频播放失败' : message;
         opening.value = false;
       }),

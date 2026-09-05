@@ -1,0 +1,268 @@
+--------- beginning of main
+09-06 00:39:46.360 32257 32257 I flutter : [00:39:46.360] DEBUG/FeedCtrl: onPageChanged: 3 -> 4
+09-06 00:39:46.360 32257 32257 I flutter : [00:39:46.360] DEBUG/FeedCtrl: rememberPosition: index=3 positionMs=0
+09-06 00:39:46.360 32257 32257 I flutter : [00:39:46.360] DEBUG/FeedCtrl: ensureCurrentPlayerReady: index=4
+09-06 00:39:46.360 32257 32257 I flutter : [00:39:46.360] DEBUG/Player#4: [A(29)] attach video output
+09-06 00:39:46.375 32257 32257 I flutter : [00:39:46.374] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=3
+09-06 00:39:46.375 32257 32257 I flutter : [00:39:46.375] DEBUG/Player#3: [B(17)] pause requested
+09-06 00:39:46.375 32257 32257 I flutter : [00:39:46.375] DEBUG/Player#3: [B(17)] stream.playing=false
+09-06 00:39:46.376 32257 32257 I flutter : [00:39:46.376] DEBUG/FeedCtrl: syncPlaybackStates -> play index=4
+09-06 00:39:46.377 32257 32257 I flutter : [00:39:46.376] DEBUG/Player#4: [A(29)] play requested
+09-06 00:39:46.424 32257 32257 I flutter : [00:39:46.424] DEBUG/Player#4: [A(29)] stream.playing=true
+09-06 00:39:46.425 32257 32257 I flutter : [00:39:46.425] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=5
+09-06 00:39:46.425 32257 32257 I flutter : [00:39:46.425] DEBUG/Player#5: [A(47)] pause requested
+09-06 00:39:46.434 32257 32257 I flutter : [00:39:46.434] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=6
+09-06 00:39:46.434 32257 32257 I flutter : [00:39:46.434] DEBUG/Player#6: [A(20)] pause requested
+09-06 00:39:46.434 32257 32257 I flutter : [00:39:46.434] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=7
+09-06 00:39:46.435 32257 32257 I flutter : [00:39:46.435] DEBUG/Player#7: [B(11)] pause requested
+09-06 00:39:46.435 32257 32257 I flutter : [00:39:46.435] DEBUG/FeedCtrl: syncWindowAroundCurrent[6]: current=4 desired=[4, 5, 6, 7, 8]
+09-06 00:39:46.436 32257 32257 I flutter : [00:39:46.435] DEBUG/FeedCtrl: creating player for index=8 url=http://192.168.0.101:9090/A/A(8).webm
+09-06 00:39:46.436 32257 32257 I flutter : [00:39:46.436] DEBUG/FeedCtrl: preload queue start: index=8
+09-06 00:39:46.436 32257 32257 I flutter : [00:39:46.436] DEBUG/Player#8: [A(8)] preload start, url=http://192.168.0.101:9090/A/A(8).webm, resumeAtMs=0
+09-06 00:39:46.442 32257 32257 I flutter : [00:39:46.442] DEBUG/FeedCtrl: rememberPosition: index=3 positionMs=0
+09-06 00:39:46.442 32257 32257 I flutter : [00:39:46.442] DEBUG/FeedCtrl: releasing player at index=3
+09-06 00:39:46.442 32257 32257 I flutter : [00:39:46.442] DEBUG/Player#3: [B(17)] dispose start
+09-06 00:39:46.446 32257 32257 I flutter : [00:39:46.446] DEBUG/Player#8: [A(8)] stream.playing=false
+09-06 00:39:46.446 32257 32257 I flutter : [00:39:46.446] DEBUG/Player#8: [A(8)] stream.completed=false
+09-06 00:39:46.446 32257 32257 I flutter : [00:39:46.446] DEBUG/Player#8: [A(8)] stream.durationMs=0
+09-06 00:39:46.446 32257 32257 I flutter : [00:39:46.446] DEBUG/Player#8: [A(8)] stream.buffering=false
+09-06 00:39:46.464 32257 32257 I flutter : [00:39:46.464] DEBUG/Player#8: [A(8)] stream.buffering=true
+09-06 00:39:46.482 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:46.482 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1, height: 1}, wid: 0, handle: -5476376622487985072, id: 0}
+09-06 00:39:46.483 32257 32257 I flutter : [00:39:46.483] DEBUG/Player#3: [B(17)] dispose end
+09-06 00:39:46.855 32257 32257 I flutter : [00:39:46.855] DEBUG/Player#8: [A(8)] stream.durationMs=237780
+09-06 00:39:46.855 32257 32257 I flutter : [00:39:46.855] DEBUG/Player#8: [A(8)] stream.duration=237780ms during waitForOpen, open success
+09-06 00:39:46.855 32257 32257 I flutter : [00:39:46.855] DEBUG/Player#8: [A(8)] stream.buffering=false
+09-06 00:39:46.856 32257 32257 I flutter : [00:39:46.856] DEBUG/Player#8: [A(8)] preload open success (attempt 1)
+09-06 00:39:46.856 32257 32257 I flutter : [00:39:46.856] DEBUG/FeedCtrl: preload queue done: index=8
+09-06 00:39:46.873 32257 32257 I flutter : [00:39:46.873] DEBUG/Player#8: [A(8)] cover loaded from cache, bytes=774434
+09-06 00:39:47.243 32257 32257 I flutter : [00:39:47.243] DEBUG/FeedCtrl: onPageChanged: 4 -> 5
+09-06 00:39:47.244 32257 32257 I flutter : [00:39:47.244] DEBUG/FeedCtrl: rememberPosition: index=4 positionMs=0
+09-06 00:39:47.244 32257 32257 I flutter : [00:39:47.244] DEBUG/FeedCtrl: ensureCurrentPlayerReady: index=5
+09-06 00:39:47.244 32257 32257 I flutter : [00:39:47.244] DEBUG/Player#5: [A(47)] attach video output
+09-06 00:39:47.263 32257 32257 I flutter : [00:39:47.262] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=4
+09-06 00:39:47.263 32257 32257 I flutter : [00:39:47.263] DEBUG/Player#4: [A(29)] pause requested
+09-06 00:39:47.263 32257 32257 I flutter : [00:39:47.263] DEBUG/Player#4: [A(29)] stream.playing=false
+09-06 00:39:47.264 32257 32257 I flutter : [00:39:47.264] DEBUG/FeedCtrl: syncPlaybackStates -> play index=5
+09-06 00:39:47.264 32257 32257 I flutter : [00:39:47.264] DEBUG/Player#5: [A(47)] play requested
+09-06 00:39:47.304 32257 32257 I flutter : [00:39:47.304] DEBUG/Player#5: [A(47)] stream.playing=true
+09-06 00:39:47.305 32257 32257 I flutter : [00:39:47.305] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=6
+09-06 00:39:47.305 32257 32257 I flutter : [00:39:47.305] DEBUG/Player#6: [A(20)] pause requested
+09-06 00:39:47.312 32257 32257 I flutter : [00:39:47.312] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=7
+09-06 00:39:47.312 32257 32257 I flutter : [00:39:47.312] DEBUG/Player#7: [B(11)] pause requested
+09-06 00:39:47.313 32257 32257 I flutter : [00:39:47.313] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=8
+09-06 00:39:47.313 32257 32257 I flutter : [00:39:47.313] DEBUG/Player#8: [A(8)] pause requested
+09-06 00:39:47.313 32257 32257 I flutter : [00:39:47.313] DEBUG/FeedCtrl: syncWindowAroundCurrent[7]: current=5 desired=[5, 6, 7, 8, 9]
+09-06 00:39:47.314 32257 32257 I flutter : [00:39:47.314] DEBUG/FeedCtrl: creating player for index=9 url=http://192.168.0.101:9090/A/A(42).webm
+09-06 00:39:47.314 32257 32257 I flutter : [00:39:47.314] DEBUG/FeedCtrl: preload queue start: index=9
+09-06 00:39:47.314 32257 32257 I flutter : [00:39:47.314] DEBUG/Player#9: [A(42)] preload start, url=http://192.168.0.101:9090/A/A(42).webm, resumeAtMs=0
+09-06 00:39:47.318 32257 32257 I flutter : [00:39:47.318] DEBUG/FeedCtrl: rememberPosition: index=4 positionMs=0
+09-06 00:39:47.318 32257 32257 I flutter : [00:39:47.318] DEBUG/FeedCtrl: releasing player at index=4
+09-06 00:39:47.318 32257 32257 I flutter : [00:39:47.318] DEBUG/Player#4: [A(29)] dispose start
+09-06 00:39:47.321 32257 32257 I flutter : [00:39:47.321] DEBUG/Player#9: [A(42)] stream.playing=false
+09-06 00:39:47.322 32257 32257 I flutter : [00:39:47.322] DEBUG/Player#9: [A(42)] stream.completed=false
+09-06 00:39:47.322 32257 32257 I flutter : [00:39:47.322] DEBUG/Player#9: [A(42)] stream.durationMs=0
+09-06 00:39:47.322 32257 32257 I flutter : [00:39:47.322] DEBUG/Player#9: [A(42)] stream.buffering=false
+09-06 00:39:47.343 32257 32257 I flutter : [00:39:47.343] DEBUG/Player#9: [A(42)] stream.buffering=true
+09-06 00:39:47.368 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:47.368 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1, height: 1}, wid: 0, handle: -5476376617804891568, id: 0}
+09-06 00:39:47.368 32257 32257 I flutter : [00:39:47.368] DEBUG/Player#4: [A(29)] dispose end
+09-06 00:39:47.867 32257 32257 I flutter : [00:39:47.867] DEBUG/Player#9: [A(42)] stream.durationMs=234100
+09-06 00:39:47.867 32257 32257 I flutter : [00:39:47.867] DEBUG/Player#9: [A(42)] stream.duration=234100ms during waitForOpen, open success
+09-06 00:39:47.867 32257 32257 I flutter : [00:39:47.867] DEBUG/Player#9: [A(42)] stream.buffering=false
+09-06 00:39:47.867 32257 32257 I flutter : [00:39:47.867] DEBUG/Player#9: [A(42)] preload open success (attempt 1)
+09-06 00:39:47.868 32257 32257 I flutter : [00:39:47.868] DEBUG/FeedCtrl: preload queue done: index=9
+09-06 00:39:47.875 32257 32257 I flutter : [00:39:47.875] DEBUG/Player#9: [A(42)] cover loaded from cache, bytes=608901
+09-06 00:39:48.110 32257 32257 I flutter : [00:39:48.110] DEBUG/FeedCtrl: onPageChanged: 5 -> 6
+09-06 00:39:48.110 32257 32257 I flutter : [00:39:48.110] DEBUG/FeedCtrl: rememberPosition: index=5 positionMs=0
+09-06 00:39:48.110 32257 32257 I flutter : [00:39:48.110] DEBUG/FeedCtrl: ensureCurrentPlayerReady: index=6
+09-06 00:39:48.111 32257 32257 I flutter : [00:39:48.110] DEBUG/Player#6: [A(20)] attach video output
+09-06 00:39:48.124 32257 32257 I flutter : [00:39:48.124] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=5
+09-06 00:39:48.124 32257 32257 I flutter : [00:39:48.124] DEBUG/Player#5: [A(47)] pause requested
+09-06 00:39:48.125 32257 32257 I flutter : [00:39:48.125] DEBUG/Player#5: [A(47)] stream.playing=false
+09-06 00:39:48.126 32257 32257 I flutter : [00:39:48.126] DEBUG/FeedCtrl: syncPlaybackStates -> play index=6
+09-06 00:39:48.126 32257 32257 I flutter : [00:39:48.126] DEBUG/Player#6: [A(20)] play requested
+09-06 00:39:48.179 32257 32257 I flutter : [00:39:48.179] DEBUG/Player#6: [A(20)] stream.playing=true
+09-06 00:39:48.180 32257 32257 I flutter : [00:39:48.180] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=7
+09-06 00:39:48.180 32257 32257 I flutter : [00:39:48.180] DEBUG/Player#7: [B(11)] pause requested
+09-06 00:39:48.185 32257 32257 I flutter : [00:39:48.185] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=8
+09-06 00:39:48.185 32257 32257 I flutter : [00:39:48.185] DEBUG/Player#8: [A(8)] pause requested
+09-06 00:39:48.186 32257 32257 I flutter : [00:39:48.186] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=9
+09-06 00:39:48.186 32257 32257 I flutter : [00:39:48.186] DEBUG/Player#9: [A(42)] pause requested
+09-06 00:39:48.186 32257 32257 I flutter : [00:39:48.186] DEBUG/FeedCtrl: syncWindowAroundCurrent[8]: current=6 desired=[6, 7, 8, 9, 10]
+09-06 00:39:48.187 32257 32257 I flutter : [00:39:48.187] DEBUG/FeedCtrl: creating player for index=10 url=http://192.168.0.101:9090/A/A(39).webm
+09-06 00:39:48.187 32257 32257 I flutter : [00:39:48.187] DEBUG/FeedCtrl: preload queue start: index=10
+09-06 00:39:48.187 32257 32257 I flutter : [00:39:48.187] DEBUG/Player#10: [A(39)] preload start, url=http://192.168.0.101:9090/A/A(39).webm, resumeAtMs=0
+09-06 00:39:48.191 32257 32257 I flutter : [00:39:48.191] DEBUG/FeedCtrl: rememberPosition: index=5 positionMs=0
+09-06 00:39:48.191 32257 32257 I flutter : [00:39:48.191] DEBUG/FeedCtrl: releasing player at index=5
+09-06 00:39:48.191 32257 32257 I flutter : [00:39:48.191] DEBUG/Player#5: [A(47)] dispose start
+09-06 00:39:48.201 32257 32257 I flutter : [00:39:48.201] DEBUG/Player#10: [A(39)] stream.playing=false
+09-06 00:39:48.201 32257 32257 I flutter : [00:39:48.201] DEBUG/Player#10: [A(39)] stream.completed=false
+09-06 00:39:48.201 32257 32257 I flutter : [00:39:48.201] DEBUG/Player#10: [A(39)] stream.durationMs=0
+09-06 00:39:48.201 32257 32257 I flutter : [00:39:48.201] DEBUG/Player#10: [A(39)] stream.buffering=false
+09-06 00:39:48.216 32257 32257 I flutter : [00:39:48.216] DEBUG/Player#10: [A(39)] stream.buffering=true
+09-06 00:39:48.233 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:48.233 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1, height: 1}, wid: 0, handle: -5476376627338026928, id: 0}
+09-06 00:39:48.234 32257 32257 I flutter : [00:39:48.234] DEBUG/Player#5: [A(47)] dispose end
+09-06 00:39:48.685 32257 32257 I flutter : [00:39:48.684] DEBUG/Player#10: [A(39)] stream.durationMs=270938
+09-06 00:39:48.685 32257 32257 I flutter : [00:39:48.685] DEBUG/Player#10: [A(39)] stream.duration=270938ms during waitForOpen, open success
+09-06 00:39:48.685 32257 32257 I flutter : [00:39:48.685] DEBUG/Player#10: [A(39)] stream.buffering=false
+09-06 00:39:48.685 32257 32257 I flutter : [00:39:48.685] DEBUG/Player#10: [A(39)] preload open success (attempt 1)
+09-06 00:39:48.685 32257 32257 I flutter : [00:39:48.685] DEBUG/FeedCtrl: preload queue done: index=10
+09-06 00:39:48.693 32257 32257 I flutter : [00:39:48.692] DEBUG/Player#10: [A(39)] cover loaded from cache, bytes=637456
+09-06 00:39:48.961 32257 32257 I flutter : [00:39:48.960] DEBUG/FeedCtrl: onPageChanged: 6 -> 7
+09-06 00:39:48.961 32257 32257 I flutter : [00:39:48.961] DEBUG/FeedCtrl: rememberPosition: index=6 positionMs=0
+09-06 00:39:48.961 32257 32257 I flutter : [00:39:48.961] DEBUG/FeedCtrl: ensureCurrentPlayerReady: index=7
+09-06 00:39:48.961 32257 32257 I flutter : [00:39:48.961] DEBUG/Player#7: [B(11)] attach video output
+09-06 00:39:48.980 32257 32257 I flutter : [00:39:48.980] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=6
+09-06 00:39:48.980 32257 32257 I flutter : [00:39:48.980] DEBUG/Player#6: [A(20)] pause requested
+09-06 00:39:48.980 32257 32257 I flutter : [00:39:48.980] DEBUG/Player#6: [A(20)] stream.playing=false
+09-06 00:39:48.982 32257 32257 I flutter : [00:39:48.982] DEBUG/FeedCtrl: syncPlaybackStates -> play index=7
+09-06 00:39:48.982 32257 32257 I flutter : [00:39:48.982] DEBUG/Player#7: [B(11)] play requested
+09-06 00:39:49.034 32257 32257 I flutter : [00:39:49.034] DEBUG/Player#7: [B(11)] stream.playing=true
+09-06 00:39:49.035 32257 32257 I flutter : [00:39:49.035] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=8
+09-06 00:39:49.035 32257 32257 I flutter : [00:39:49.035] DEBUG/Player#8: [A(8)] pause requested
+09-06 00:39:49.043 32257 32257 I flutter : [00:39:49.043] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=9
+09-06 00:39:49.043 32257 32257 I flutter : [00:39:49.043] DEBUG/Player#9: [A(42)] pause requested
+09-06 00:39:49.044 32257 32257 I flutter : [00:39:49.044] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=10
+09-06 00:39:49.044 32257 32257 I flutter : [00:39:49.044] DEBUG/Player#10: [A(39)] pause requested
+09-06 00:39:49.045 32257 32257 I flutter : [00:39:49.045] DEBUG/FeedCtrl: syncWindowAroundCurrent[9]: current=7 desired=[7, 8, 9, 10, 11]
+09-06 00:39:49.045 32257 32257 I flutter : [00:39:49.045] DEBUG/FeedCtrl: creating player for index=11 url=http://192.168.0.101:9090/A/A(37).webm
+09-06 00:39:49.045 32257 32257 I flutter : [00:39:49.045] DEBUG/FeedCtrl: preload queue start: index=11
+09-06 00:39:49.045 32257 32257 I flutter : [00:39:49.045] DEBUG/Player#11: [A(37)] preload start, url=http://192.168.0.101:9090/A/A(37).webm, resumeAtMs=0
+09-06 00:39:49.051 32257 32257 I flutter : [00:39:49.051] DEBUG/FeedCtrl: rememberPosition: index=6 positionMs=0
+09-06 00:39:49.051 32257 32257 I flutter : [00:39:49.051] DEBUG/FeedCtrl: releasing player at index=6
+09-06 00:39:49.051 32257 32257 I flutter : [00:39:49.051] DEBUG/Player#6: [A(20)] dispose start
+09-06 00:39:49.054 32257 32257 I flutter : [00:39:49.054] DEBUG/Player#11: [A(37)] stream.playing=false
+09-06 00:39:49.055 32257 32257 I flutter : [00:39:49.054] DEBUG/Player#11: [A(37)] stream.completed=false
+09-06 00:39:49.055 32257 32257 I flutter : [00:39:49.055] DEBUG/Player#11: [A(37)] stream.durationMs=0
+09-06 00:39:49.055 32257 32257 I flutter : [00:39:49.055] DEBUG/Player#11: [A(37)] stream.buffering=false
+09-06 00:39:49.071 32257 32257 I flutter : [00:39:49.071] DEBUG/Player#11: [A(37)] stream.buffering=true
+09-06 00:39:49.108 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:49.108 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1, height: 1}, wid: 0, handle: -5476376627251762096, id: 0}
+09-06 00:39:49.109 32257 32257 I flutter : [00:39:49.109] DEBUG/Player#6: [A(20)] dispose end
+09-06 00:39:49.493 32257 32257 I flutter : [00:39:49.493] DEBUG/Player#11: [A(37)] stream.durationMs=337510
+09-06 00:39:49.493 32257 32257 I flutter : [00:39:49.493] DEBUG/Player#11: [A(37)] stream.duration=337510ms during waitForOpen, open success
+09-06 00:39:49.494 32257 32257 I flutter : [00:39:49.493] DEBUG/Player#11: [A(37)] stream.buffering=false
+09-06 00:39:49.494 32257 32257 I flutter : [00:39:49.494] DEBUG/Player#11: [A(37)] preload open success (attempt 1)
+09-06 00:39:49.494 32257 32257 I flutter : [00:39:49.494] DEBUG/FeedCtrl: preload queue done: index=11
+09-06 00:39:49.505 32257 32257 I flutter : [00:39:49.505] DEBUG/Player#11: [A(37)] cover loaded from cache, bytes=471761
+09-06 00:39:49.827 32257 32257 I flutter : [00:39:49.827] DEBUG/FeedCtrl: onPageChanged: 7 -> 8
+09-06 00:39:49.828 32257 32257 I flutter : [00:39:49.828] DEBUG/FeedCtrl: rememberPosition: index=7 positionMs=0
+09-06 00:39:49.828 32257 32257 I flutter : [00:39:49.828] DEBUG/FeedCtrl: ensureCurrentPlayerReady: index=8
+09-06 00:39:49.828 32257 32257 I flutter : [00:39:49.828] DEBUG/Player#8: [A(8)] attach video output
+09-06 00:39:49.845 32257 32257 I flutter : [00:39:49.845] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=7
+09-06 00:39:49.845 32257 32257 I flutter : [00:39:49.845] DEBUG/Player#7: [B(11)] pause requested
+09-06 00:39:49.845 32257 32257 I flutter : [00:39:49.845] DEBUG/Player#7: [B(11)] stream.playing=false
+09-06 00:39:49.847 32257 32257 I flutter : [00:39:49.847] DEBUG/FeedCtrl: syncPlaybackStates -> play index=8
+09-06 00:39:49.847 32257 32257 I flutter : [00:39:49.847] DEBUG/Player#8: [A(8)] play requested
+09-06 00:39:49.892 32257 32257 I flutter : [00:39:49.892] DEBUG/Player#8: [A(8)] stream.playing=true
+09-06 00:39:49.903 32257 32257 I flutter : [00:39:49.902] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=9
+09-06 00:39:49.903 32257 32257 I flutter : [00:39:49.903] DEBUG/Player#9: [A(42)] pause requested
+09-06 00:39:49.903 32257 32257 I flutter : [00:39:49.903] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=10
+09-06 00:39:49.903 32257 32257 I flutter : [00:39:49.903] DEBUG/Player#10: [A(39)] pause requested
+09-06 00:39:49.904 32257 32257 I flutter : [00:39:49.904] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=11
+09-06 00:39:49.904 32257 32257 I flutter : [00:39:49.904] DEBUG/Player#11: [A(37)] pause requested
+09-06 00:39:49.905 32257 32257 I flutter : [00:39:49.905] DEBUG/FeedCtrl: syncWindowAroundCurrent[10]: current=8 desired=[8, 9, 10, 11, 12]
+09-06 00:39:49.905 32257 32257 I flutter : [00:39:49.905] DEBUG/FeedCtrl: creating player for index=12 url=http://192.168.0.101:9090/A/A(14).webm
+09-06 00:39:49.905 32257 32257 I flutter : [00:39:49.905] DEBUG/FeedCtrl: preload queue start: index=12
+09-06 00:39:49.905 32257 32257 I flutter : [00:39:49.905] DEBUG/Player#12: [A(14)] preload start, url=http://192.168.0.101:9090/A/A(14).webm, resumeAtMs=0
+09-06 00:39:49.915 32257 32257 I flutter : [00:39:49.915] DEBUG/FeedCtrl: rememberPosition: index=7 positionMs=0
+09-06 00:39:49.915 32257 32257 I flutter : [00:39:49.915] DEBUG/FeedCtrl: releasing player at index=7
+09-06 00:39:49.915 32257 32257 I flutter : [00:39:49.915] DEBUG/Player#7: [B(11)] dispose start
+09-06 00:39:49.928 32257 32257 I flutter : [00:39:49.928] DEBUG/Player#12: [A(14)] stream.playing=false
+09-06 00:39:49.928 32257 32257 I flutter : [00:39:49.928] DEBUG/Player#12: [A(14)] stream.completed=false
+09-06 00:39:49.928 32257 32257 I flutter : [00:39:49.928] DEBUG/Player#12: [A(14)] stream.durationMs=0
+09-06 00:39:49.928 32257 32257 I flutter : [00:39:49.928] DEBUG/Player#12: [A(14)] stream.buffering=false
+09-06 00:39:49.943 32257 32257 I flutter : [00:39:49.942] DEBUG/Player#12: [A(14)] stream.buffering=true
+09-06 00:39:50.003 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:50.003 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1, height: 1}, wid: 0, handle: -5476376627419023280, id: 0}
+09-06 00:39:50.004 32257 32257 I flutter : [00:39:50.004] DEBUG/Player#7: [B(11)] dispose end
+09-06 00:39:50.354 32257 32257 I flutter : [00:39:50.354] DEBUG/Player#12: [A(14)] stream.durationMs=157416
+09-06 00:39:50.355 32257 32257 I flutter : [00:39:50.354] DEBUG/Player#12: [A(14)] stream.duration=157416ms during waitForOpen, open success
+09-06 00:39:50.355 32257 32257 I flutter : [00:39:50.355] DEBUG/Player#12: [A(14)] stream.buffering=false
+09-06 00:39:50.355 32257 32257 I flutter : [00:39:50.355] DEBUG/Player#12: [A(14)] preload open success (attempt 1)
+09-06 00:39:50.355 32257 32257 I flutter : [00:39:50.355] DEBUG/FeedCtrl: preload queue done: index=12
+09-06 00:39:50.368 32257 32257 I flutter : [00:39:50.368] DEBUG/Player#12: [A(14)] cover loaded from cache, bytes=621954
+09-06 00:39:50.677 32257 32257 I flutter : [00:39:50.677] DEBUG/FeedCtrl: onPageChanged: 8 -> 9
+09-06 00:39:50.678 32257 32257 I flutter : [00:39:50.678] DEBUG/FeedCtrl: rememberPosition: index=8 positionMs=0
+09-06 00:39:50.678 32257 32257 I flutter : [00:39:50.678] DEBUG/FeedCtrl: ensureCurrentPlayerReady: index=9
+09-06 00:39:50.678 32257 32257 I flutter : [00:39:50.678] DEBUG/Player#9: [A(42)] attach video output
+09-06 00:39:50.693 32257 32257 I flutter : [00:39:50.693] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=8
+09-06 00:39:50.693 32257 32257 I flutter : [00:39:50.693] DEBUG/Player#8: [A(8)] pause requested
+09-06 00:39:50.693 32257 32257 I flutter : [00:39:50.693] DEBUG/Player#8: [A(8)] stream.playing=false
+09-06 00:39:50.695 32257 32257 I flutter : [00:39:50.695] DEBUG/FeedCtrl: syncPlaybackStates -> play index=9
+09-06 00:39:50.695 32257 32257 I flutter : [00:39:50.695] DEBUG/Player#9: [A(42)] play requested
+09-06 00:39:50.743 32257 32257 I flutter : [00:39:50.743] DEBUG/Player#9: [A(42)] stream.playing=true
+09-06 00:39:50.744 32257 32257 I flutter : [00:39:50.744] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=10
+09-06 00:39:50.744 32257 32257 I flutter : [00:39:50.744] DEBUG/Player#10: [A(39)] pause requested
+09-06 00:39:50.755 32257 32257 I flutter : [00:39:50.755] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=11
+09-06 00:39:50.755 32257 32257 I flutter : [00:39:50.755] DEBUG/Player#11: [A(37)] pause requested
+09-06 00:39:50.756 32257 32257 I flutter : [00:39:50.756] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=12
+09-06 00:39:50.756 32257 32257 I flutter : [00:39:50.756] DEBUG/Player#12: [A(14)] pause requested
+09-06 00:39:50.757 32257 32257 I flutter : [00:39:50.757] DEBUG/FeedCtrl: syncWindowAroundCurrent[11]: current=9 desired=[9, 10, 11, 12, 13]
+09-06 00:39:50.757 32257 32257 I flutter : [00:39:50.757] DEBUG/FeedCtrl: creating player for index=13 url=http://192.168.0.101:9090/A/A(33).webm
+09-06 00:39:50.757 32257 32257 I flutter : [00:39:50.757] DEBUG/FeedCtrl: preload queue start: index=13
+09-06 00:39:50.757 32257 32257 I flutter : [00:39:50.757] DEBUG/Player#13: [A(33)] preload start, url=http://192.168.0.101:9090/A/A(33).webm, resumeAtMs=0
+09-06 00:39:50.762 32257 32257 I flutter : [00:39:50.762] DEBUG/FeedCtrl: rememberPosition: index=8 positionMs=0
+09-06 00:39:50.762 32257 32257 I flutter : [00:39:50.762] DEBUG/FeedCtrl: releasing player at index=8
+09-06 00:39:50.762 32257 32257 I flutter : [00:39:50.762] DEBUG/Player#8: [A(8)] dispose start
+09-06 00:39:50.770 32257 32257 I flutter : [00:39:50.770] DEBUG/Player#13: [A(33)] stream.playing=false
+09-06 00:39:50.770 32257 32257 I flutter : [00:39:50.770] DEBUG/Player#13: [A(33)] stream.completed=false
+09-06 00:39:50.770 32257 32257 I flutter : [00:39:50.770] DEBUG/Player#13: [A(33)] stream.durationMs=0
+09-06 00:39:50.770 32257 32257 I flutter : [00:39:50.770] DEBUG/Player#13: [A(33)] stream.buffering=false
+09-06 00:39:50.788 32257 32257 I flutter : [00:39:50.788] DEBUG/Player#13: [A(33)] stream.buffering=true
+09-06 00:39:50.808 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:50.808 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1, height: 1}, wid: 0, handle: -5476376627409725872, id: 0}
+09-06 00:39:50.808 32257 32257 I flutter : [00:39:50.808] DEBUG/Player#8: [A(8)] dispose end
+09-06 00:39:51.054 32257 32257 I flutter : [00:39:51.053] DEBUG/Player#13: [A(33)] stream.durationMs=180200
+09-06 00:39:51.054 32257 32257 I flutter : [00:39:51.054] DEBUG/Player#13: [A(33)] stream.duration=180200ms during waitForOpen, open success
+09-06 00:39:51.054 32257 32257 I flutter : [00:39:51.054] DEBUG/Player#13: [A(33)] stream.buffering=false
+09-06 00:39:51.054 32257 32257 I flutter : [00:39:51.054] DEBUG/Player#13: [A(33)] preload open success (attempt 1)
+09-06 00:39:51.054 32257 32257 I flutter : [00:39:51.054] DEBUG/FeedCtrl: preload queue done: index=13
+09-06 00:39:51.070 32257 32257 I flutter : [00:39:51.070] DEBUG/Player#13: [A(33)] cover loaded from cache, bytes=420374
+09-06 00:39:51.251 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:51.252 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1920, height: 1080}, wid: 14658, handle: -5476376627556665776, id: 9}
+09-06 00:39:51.397 32257 32257 I flutter : [00:39:51.397] DEBUG/Player#9: [A(42)] stream.buffering=true
+09-06 00:39:51.561 32257 32257 I flutter : [00:39:51.561] DEBUG/FeedCtrl: onPageChanged: 9 -> 10
+09-06 00:39:51.561 32257 32257 I flutter : [00:39:51.561] DEBUG/FeedCtrl: rememberPosition: index=9 positionMs=0
+09-06 00:39:51.561 32257 32257 I flutter : [00:39:51.561] DEBUG/FeedCtrl: ensureCurrentPlayerReady: index=10
+09-06 00:39:51.561 32257 32257 I flutter : [00:39:51.561] DEBUG/Player#10: [A(39)] attach video output
+09-06 00:39:51.574 32257 32257 I flutter : [00:39:51.574] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=9
+09-06 00:39:51.574 32257 32257 I flutter : [00:39:51.574] DEBUG/Player#9: [A(42)] pause requested
+09-06 00:39:51.575 32257 32257 I flutter : [00:39:51.575] DEBUG/Player#9: [A(42)] stream.playing=false
+09-06 00:39:51.576 32257 32257 I flutter : [00:39:51.576] DEBUG/FeedCtrl: syncPlaybackStates -> play index=10
+09-06 00:39:51.576 32257 32257 I flutter : [00:39:51.576] DEBUG/Player#10: [A(39)] play requested
+09-06 00:39:51.637 32257 32257 I flutter : [00:39:51.637] DEBUG/Player#10: [A(39)] stream.playing=true
+09-06 00:39:51.638 32257 32257 I flutter : [00:39:51.638] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=11
+09-06 00:39:51.638 32257 32257 I flutter : [00:39:51.638] DEBUG/Player#11: [A(37)] pause requested
+09-06 00:39:51.643 32257 32257 I flutter : [00:39:51.643] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=12
+09-06 00:39:51.643 32257 32257 I flutter : [00:39:51.643] DEBUG/Player#12: [A(14)] pause requested
+09-06 00:39:51.644 32257 32257 I flutter : [00:39:51.644] DEBUG/FeedCtrl: syncPlaybackStates -> pause index=13
+09-06 00:39:51.644 32257 32257 I flutter : [00:39:51.644] DEBUG/Player#13: [A(33)] pause requested
+09-06 00:39:51.646 32257 32257 I flutter : [00:39:51.646] DEBUG/FeedCtrl: syncWindowAroundCurrent[12]: current=10 desired=[10, 11, 12, 13, 14]
+09-06 00:39:51.647 32257 32257 I flutter : [00:39:51.647] DEBUG/FeedCtrl: creating player for index=14 url=http://192.168.0.101:9090/A/A(41).webm
+09-06 00:39:51.647 32257 32257 I flutter : [00:39:51.647] DEBUG/FeedCtrl: preload queue start: index=14
+09-06 00:39:51.647 32257 32257 I flutter : [00:39:51.647] DEBUG/Player#14: [A(41)] preload start, url=http://192.168.0.101:9090/A/A(41).webm, resumeAtMs=0
+09-06 00:39:51.651 32257 32257 I flutter : [00:39:51.651] DEBUG/FeedCtrl: rememberPosition: index=9 positionMs=0
+09-06 00:39:51.651 32257 32257 I flutter : [00:39:51.651] DEBUG/FeedCtrl: releasing player at index=9
+09-06 00:39:51.651 32257 32257 I flutter : [00:39:51.651] DEBUG/Player#9: [A(42)] dispose start
+09-06 00:39:51.656 32257 32257 I flutter : [00:39:51.655] DEBUG/Player#14: [A(41)] stream.playing=false
+09-06 00:39:51.656 32257 32257 I flutter : [00:39:51.656] DEBUG/Player#14: [A(41)] stream.completed=false
+09-06 00:39:51.656 32257 32257 I flutter : [00:39:51.656] DEBUG/Player#14: [A(41)] stream.durationMs=0
+09-06 00:39:51.656 32257 32257 I flutter : [00:39:51.656] DEBUG/Player#14: [A(41)] stream.buffering=false
+09-06 00:39:51.669 32257 32257 I flutter : [00:39:51.669] DEBUG/Player#14: [A(41)] stream.buffering=true
+09-06 00:39:51.685 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:51.685 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1920, height: 1080}, wid: 0, handle: -5476376627556665776, id: 9}
+09-06 00:39:51.686 32257 32257 I flutter : [00:39:51.686] DEBUG/Player#9: [A(42)] dispose end
+09-06 00:39:52.107 32257 32257 I flutter : [00:39:52.107] DEBUG/Player#14: [A(41)] stream.durationMs=217973
+09-06 00:39:52.107 32257 32257 I flutter : [00:39:52.107] DEBUG/Player#14: [A(41)] stream.duration=217973ms during waitForOpen, open success
+09-06 00:39:52.107 32257 32257 I flutter : [00:39:52.107] DEBUG/Player#14: [A(41)] stream.buffering=false
+09-06 00:39:52.107 32257 32257 I flutter : [00:39:52.107] DEBUG/Player#14: [A(41)] preload open success (attempt 1)
+09-06 00:39:52.108 32257 32257 I flutter : [00:39:52.108] DEBUG/FeedCtrl: preload queue done: index=14
+09-06 00:39:52.122 32257 32257 I flutter : [00:39:52.122] DEBUG/Player#14: [A(41)] cover loaded from cache, bytes=669920
+09-06 00:39:52.557 32257 32257 I flutter : VideoOutput.Resize
+09-06 00:39:52.557 32257 32257 I flutter : {rect: {top: 0, left: 0, width: 1920, height: 1080}, wid: 14726, handle: -5476376622775868336, id: 10}
+09-06 00:39:52.696 32257 32257 I flutter : [00:39:52.696] DEBUG/Player#10: [A(39)] first frame ready by position: 133ms
+09-06 00:39:52.708 32257 32257 I flutter : [00:39:52.708] DEBUG/Player#10: [A(39)] stream.buffering=true
+09-06 00:39:53.323 32257 32257 I flutter : [00:39:53.322] DEBUG/Player#10: [A(39)] stream.buffering=false

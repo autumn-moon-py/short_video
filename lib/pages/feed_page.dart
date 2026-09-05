@@ -1,9 +1,8 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:media_kit_video/media_kit_video.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../controllers/feed_controller.dart';
 import '../utils/app_logger.dart';
@@ -21,9 +20,7 @@ class FeedPage extends GetView<FeedController> {
             final hasCache = controller.hasCachedServer.value;
             return _StatusView(
               title: hasCache ? '正在加载视频' : '正在查找服务',
-              message: hasCache
-                  ? '正在连接视频服务'
-                  : '正在后台扫描 192.168 网段的视频服务',
+              message: hasCache ? '正在连接视频服务' : '正在后台扫描 192.168 网段的视频服务',
               loading: true,
               onRetry: controller.retryDiscovery,
             );
@@ -63,6 +60,23 @@ class _VideoPageItem extends StatelessWidget {
 
   final int index;
 
+  Future<void> _exportLog(BuildContext context) async {
+    try {
+      final path = await AppLogger.exportToFile();
+      if (!context.mounted) return;
+      await Clipboard.setData(ClipboardData(text: path));
+      await Share.shareXFiles([XFile(path)], subject: '短视频 App 日志');
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('导出失败: $e'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GetBuilder<FeedController>(
@@ -75,10 +89,12 @@ class _VideoPageItem extends StatelessWidget {
           final isCurrent = controller.currentIndex.value == index;
           final effectiveCover =
               player?.coverFrame.value ?? controller.coverFrameAt(index);
-          final showInitialLoading = player == null ||
+          final showInitialLoading =
+              player == null ||
               !player.firstFrameReady.value ||
               player.opening.value;
-          final showLoadingCover = isCurrent &&
+          final showLoadingCover =
+              isCurrent &&
               (controller.isPageTransitioning.value || showInitialLoading);
 
           return GestureDetector(
@@ -94,13 +110,13 @@ class _VideoPageItem extends StatelessWidget {
                   child: player == null
                       ? const SizedBox.shrink()
                       : isCurrent
-                          ? SizedBox.expand(
-                              child: _VideoViewport(
-                                player: player,
-                                isCurrent: isCurrent,
-                              ),
-                            )
-                          : const SizedBox.shrink(),
+                      ? SizedBox.expand(
+                          child: _VideoViewport(
+                            player: player,
+                            isCurrent: isCurrent,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                 ),
                 if (showLoadingCover)
                   Positioned.fill(
@@ -111,22 +127,35 @@ class _VideoPageItem extends StatelessWidget {
                   ),
                 if (player?.error.value.isNotEmpty == true)
                   Center(
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.7),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 14,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.7),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 14,
+                            ),
+                            child: Text(
+                              player!.error.value,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                          ),
                         ),
-                        child: Text(
-                          player!.error.value,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(color: Colors.white70),
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: () => _exportLog(context),
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.white54,
+                          ),
+                          child: const Text('导出日志'),
                         ),
-                      ),
+                      ],
                     ),
                   ),
                 if (isCurrent)
@@ -248,7 +277,8 @@ class _CurrentVideoOverlay extends StatelessWidget {
         return Obx(() {
           final chromeVisible = controller.showChrome.value;
           final showTitle = chromeVisible && !controller.isLandscapeMode.value;
-          final showPlayButton = chromeVisible &&
+          final showPlayButton =
+              chromeVisible &&
               !player.playing.value &&
               !player.opening.value &&
               !player.buffering.value &&
@@ -360,13 +390,15 @@ class _ProgressBar extends StatelessWidget {
           : Duration(milliseconds: dragValue.round());
       final totalMs = duration.inMilliseconds.toDouble();
       final maxValue = totalMs <= 0 ? 1.0 : totalMs;
-      final progressMs = (dragValue?.clamp(0, maxValue) ??
-              actualPosition.inMilliseconds
-                  .clamp(0, maxValue.toInt())
-                  .toDouble())
-          .toDouble();
-      final ratio =
-          maxValue <= 0 ? 0.0 : (progressMs / maxValue).clamp(0.0, 1.0);
+      final progressMs =
+          (dragValue?.clamp(0, maxValue) ??
+                  actualPosition.inMilliseconds
+                      .clamp(0, maxValue.toInt())
+                      .toDouble())
+              .toDouble();
+      final ratio = maxValue <= 0
+          ? 0.0
+          : (progressMs / maxValue).clamp(0.0, 1.0);
 
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -827,14 +859,8 @@ class _StatusView extends StatelessWidget {
     try {
       final path = await AppLogger.exportToFile();
       if (!context.mounted) return;
-      final fileName = path.split(RegExp(r'[/\\]')).last;
       await Clipboard.setData(ClipboardData(text: path));
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('日志已导出 ($fileName)，完整路径已复制到剪贴板'),
-          duration: const Duration(seconds: 4),
-        ),
-      );
+      await Share.shareXFiles([XFile(path)], subject: '短视频 App 日志');
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

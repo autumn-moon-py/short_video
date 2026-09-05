@@ -10,11 +10,11 @@ class VideoRepository {
   final ServerDiscoveryService _discoveryService;
 
   Future<VideoFeedPayload> fetchVideos() async {
-    final host = await _discoveryService.discoverServerHost();
+    final endpoint = await _discoveryService.discoverServerHost();
     final uri = Uri(
       scheme: 'http',
-      host: host,
-      port: ServerDiscoveryService.serverPort,
+      host: endpoint.host,
+      port: endpoint.port,
       path: '/video',
     );
     final client = HttpClient()..connectionTimeout = const Duration(seconds: 2);
@@ -37,7 +37,7 @@ class VideoRepository {
           .map(VideoItem.fromApi)
           .toList(growable: false);
 
-      return VideoFeedPayload(serverHost: host, videos: videos);
+      return VideoFeedPayload(serverHost: endpoint.toString(), videos: videos);
     } finally {
       client.close(force: true);
     }

@@ -1,7 +1,7 @@
 name: short_video
 description: "短视频客户端"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.3+1
 
 environment:
   sdk: ^3.11.1
@@ -15,6 +15,7 @@ dependencies:
   media_kit_libs_video: ^1.0.7
   shared_preferences: ^2.5.3
   path_provider: ^2.1.5
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:

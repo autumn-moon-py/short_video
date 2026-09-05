@@ -1,4 +1,13 @@
 allprojects {
+    buildscript {
+        repositories {
+            maven("https://maven.aliyun.com/repository/gradle-plugin")
+            maven("https://maven.aliyun.com/repository/google")
+            maven("https://maven.aliyun.com/repository/public")
+            google()
+            mavenCentral()
+        }
+    }
     repositories {
         maven("https://maven.aliyun.com/repository/google")
         maven("https://maven.aliyun.com/repository/public")
